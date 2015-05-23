@@ -3,14 +3,16 @@
 import Readlines from './index';
 
 (async function() {
-  let rl = await new Readlines('./test.txt');
-  console.log(rl);
-  let lines = rl.lines();
-  console.log(lines);
+  let rl = new Readlines();
 
-  for (let line of lines) {
+  await rl.open('./test.txt');
+
+  for (let line of rl.lines()) {
     console.log(line.toString());
   }
+
   console.log('=========');
-  console.log('all done!');
+
+  await rl.close();
+  console.log('All done!');
 })();

@@ -9,14 +9,23 @@ for (var line of rl.lines()) {
   console.log(line.toString());
 }
 
-rl.close().then(function() { console.log('file closed!'); });
+console.log(rl.is_open);
+rl.close().then(function(ctx) { console.log('file is closedddd'); });
 
 console.log('===========');
 
-new Readlines('./test.txt').then(function(ctx) {
-  for (var line of ctx.lines()) {
-    console.log(line.toString());
-  }
-}).catch(function(err) {
-  throw err;
+var rl = new Readlines();
+rl.open('./test.txt')
+  .then(function(ctx) {
+    for (var line of ctx.lines()) {
+      console.log(line.toString());
+    }
+  }).catch(function(err) {
+    throw err;
+  });
+
+console.log(rl);
+
+rl.close().then(function() {
+  console.log('file closed');
 });

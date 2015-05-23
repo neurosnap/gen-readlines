@@ -9,12 +9,15 @@ Usage
 ```
 var Readlines = require('gen-readline');
 
-new Readlines('./test.txt').then(function(ctx) {
+var rl = new Readlines();
+rl.open('./test.txt').then(function(ctx) {
 	for (var line of ctx.lines()) {
 		console.log(line.toString());
 	}
-}).catch(function(err) {
-	throw err;
+});
+rl.close().then(function(ctx) {
+	console.log('File closed!');
+	console.log(ctx.is_open);
 });
 ```
 
@@ -25,15 +28,14 @@ will return a promise to open the file and get its file size.
 import Readlines from 'gen-readline';
 
 (async function() {
-	try {
-		let rl = await new Readlines('./test.txt');
-	} catch (err) {
-		throw err;
-	}
+	let rl = new Readlines();
+	await rl.open('./test.txt');
 
 	for (let line of rl.lines()) {
 		console.log(line);
 	}
+
+	await rl.close();
 })();
 ```
 
@@ -47,6 +49,8 @@ var rl = new Readlines(fd, stats.size);
 for (var line of rl.lines()) {
 	console.log(line.toString());
 }
+
+fs.closeSync(fd);
 ```
 
 Credits

@@ -5,39 +5,71 @@ import path from 'path';
 import polyfill from 'babel/polyfill';
 
 export default class Readlines {
-  constructor(identifier, fileSize, bufferSize=80) {
+  constructor(fd, fileSize, bufferSize=80) {
     this.bufferSize = bufferSize;
-    this._position = 0;
-
-    if (typeof identifier === 'string') {
-      this.fname = identifier;
-      return this.open();
+    if (fd) {
+      this.fd = fd;
+      if (fileSize) {
+        this._size = fileSize;
+        this.rewind();
+      }
     }
-
-    this._fd = identifier;
-    this._size = fileSize;
-    this._remaining = this._size - this._position;
   }
 
-  async open() {
+  async stat(fname) {
+    this.fname = fname;
     try {
-      this._stats = await fsStat(this.fname);
+      this.stats = await fsStat(fname);
+      this._size = this.stats.size;
+      return Promise.resolve(this.stats);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  }
+
+  async open(fname) {
+    this.fname = fname;
+    try {
+      await this.stat(fname);
     } catch (err) {
       return Promise.reject(err);
     }
 
-    this._size = this._stats.size;
-    this._remaining = this._size - this._position;
-
     try {
-      this._fd = await fsOpen(this.fname);
+      this.fd = await fsOpen(fname);
+      this.rewind();
       return Promise.resolve(this);
     } catch (err) {
       return Promise.reject(err);
     }
   }
 
+  async close() {
+    if (!this.is_open) return Promise.resolve(this);
+    let fclose;
+    try {
+      fclose = await fsClose(this.fd);
+      this.fd = undefined;
+      return Promise.resolve(this);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  }
+
+  get is_open() {
+    return Boolean(this.fd);
+  }
+
+  rewind() {
+    if (!this._size) throw new Error('Filesize not found, supply in constructor or call ".stat()" for a promise');
+    this._position = 0;
+    this._remaining = this._size;
+    return this;
+  }
+
   * lines() {
+    if (!this.fd || !this._size) throw new Error('File descriptor and filesize required to get lines');
+
     while (this._remaining > 0) {
       this._remaining = this._size - this._position;
       if (this._remaining <= 0) break;
@@ -47,9 +79,9 @@ export default class Readlines {
 
       let chunk = new Buffer(tmpBufferSize);
       try {
-        fs.readSync(this._fd, chunk, 0, tmpBufferSize, this._position);
+        fs.readSync(this.fd, chunk, 0, tmpBufferSize, this._position);
       } catch (err) {
-        throw err;
+        throw new Error(err);
       }
 
       let data = chunk.toString();
@@ -71,13 +103,7 @@ export default class Readlines {
       yield concat(this._lineBuffer, newlineBuffer);
       this._lineBuffer = undefined;
     }
-    this._position = 0;
-    this._remaining = this._size;
-    return this.close();
-  }
-
-  close() {
-    return fsClose(this._fd);
+    this.rewind();
   }
 }
 
