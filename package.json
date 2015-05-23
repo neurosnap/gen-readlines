@@ -25,6 +25,7 @@
   "homepage": "https://github.com/neurosnap/gen-linereader#readme",
   "dependencies": {
     "babel": "^5.4.7",
+    "co": "^4.5.4",
     "gulp": "^3.8.11",
     "gulp-babel": "^5.1.0",
     "gulp-util": "^3.0.4"

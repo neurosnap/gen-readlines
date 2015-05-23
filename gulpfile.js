@@ -4,6 +4,8 @@ var gulp = require('gulp');
 var gutil = require('gulp-util');
 var babel = require('gulp-babel');
 
+gulp.task('default', ['babel']);
+
 gulp.task('babel', function() {
   var src = './src/**/*.js';
   var dist = './dist';

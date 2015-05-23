@@ -4,37 +4,107 @@ import fs from 'fs';
 import path from 'path';
 import polyfill from 'babel/polyfill';
 
-function readlines(fname='./test.txt') {
-  let position = 0;
-  fs.stat(fname, function(err, stats) {
-    if (err) throw new Error(err);
-    fs.open(fname, 'r', function(err, fd) {
-      if (err) throw new Error(err);
-      chunk(fd, stats.size, position);
+export default class Readlines {
+  constructor(identifier, fileSize, bufferSize=80) {
+    this.bufferSize = bufferSize;
+    this._position = 0;
+
+    if (typeof identifier === 'string') {
+      this.fname = identifier;
+      return this.open();
+    }
+
+    this._fd = identifier;
+    this._size = fileSize;
+    this._remaining = this._size - this._position;
+  }
+
+  async open() {
+    try {
+      this._stats = await fsStat(this.fname);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+
+    this._size = this._stats.size;
+    this._remaining = this._size - this._position;
+
+    try {
+      this._fd = await fsOpen(this.fname);
+      return Promise.resolve(this);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  }
+
+  * lines() {
+    while (this._remaining > 0) {
+      this._remaining = this._size - this._position;
+      if (this._remaining <= 0) break;
+
+      let tmpBufferSize = this.bufferSize;
+      if (this._remaining < this.bufferSize) tmpBufferSize = this._remaining;
+
+      let chunk = new Buffer(tmpBufferSize);
+      try {
+        fs.readSync(this._fd, chunk, 0, tmpBufferSize, this._position);
+      } catch (err) {
+        throw new Error(err);
+      }
+
+      let data = chunk.toString();
+
+      let found_newline = findLine(data);
+      if (found_newline === -1) {
+        this._lineBuffer = concat(this._lineBuffer, chunk);
+        this._position += tmpBufferSize;
+        yield* this.lines();
+        return;
+      } else if (found_newline === 0) {
+        this._position += 1;
+        yield* this.lines();
+        return;
+      }
+
+      let newlineBuffer = new Buffer(data.substring(0, found_newline));
+      this._position += newlineBuffer.length;
+      yield concat(this._lineBuffer, newlineBuffer);
+      this._lineBuffer = undefined;
+    }
+    this._position = 0;
+    this._remaining = this._size;
+    return this.close();
+  }
+
+  close() {
+    return fsClose(this._fd);
+  }
+}
+
+function fsStat(fname) {
+  return new Promise(function(resolve, reject) {
+    fs.stat(fname, function(err, stats) {
+      if (err) return reject(err);
+      resolve(stats);
     });
   });
 }
 
-function chunk(fd, maxLength, position=0, lineBuffer, bufferSize=80) {
-  let remaining = maxLength - position;
+function fsOpen(fname) {
+  return new Promise(function(resolve, reject) {
+    fs.open(fname, 'r', function(err, fd) {
+      if (err) return reject(err);
+      resolve(fd);
+    });
+  });
+}
 
-  if (remaining > 0 && remaining < bufferSize) bufferSize = remaining;
-  else if (remaining <= 0) return done(fd);
-
-  fs.read(fd, new Buffer(bufferSize), 0, bufferSize, position, function(err, bytesRead, buffer) {
-    if (err) throw new Error(err);
-
-    var data = buffer.toString();
-    let found_newline = findLine(data);
-    if (found_newline === -1) {
-      let newBuffer = concat(lineBuffer, buffer);
-      chunk(fd, maxLength, position + bufferSize, newBuffer);
-      return;
-    }
-
-    var newlineBuffer = new Buffer(data.substring(0, found_newline));
-    line(concat(lineBuffer, newlineBuffer));
-    chunk(fd, maxLength, position + bufferSize);
+function fsClose(fd) {
+  return new Promise(function(resolve, reject) {
+    fs.close(fd, function(err) {
+      if (err) return reject(err);
+      resolve();
+    });
   });
 }
 
@@ -46,18 +116,6 @@ function concat(buff_one, buff_two) {
   return Buffer.concat([buff_one, buff_two], new_length);
 }
 
-function done(fd) {
-  console.log('All done!');
-}
-
-function line(lineBuffer) {
-  console.log('Found line!');
-  console.log(lineBuffer.toString());
-  console.log('===============');
-}
-
 function findLine(chunk) {
   return chunk.search(/\r\n|\r|\n/);
 }
-
-module.exports = readlines;
