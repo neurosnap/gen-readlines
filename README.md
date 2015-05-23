@@ -3,6 +3,9 @@ Generator Line Reader
 
 Generator based line reader that only blocks when reading a line.
 
+Usage
+-----
+
 ```
 var Readlines = require('gen-readline');
 
@@ -11,12 +14,12 @@ new Readlines('./test.txt').then(function(ctx) {
 		console.log(line.toString());
 	}
 }).catch(function(err) {
-	throw new Error(err);
+	throw err;
 });
 ```
 
 Creating an instance of the `Readlines` class with a filename
-it will return a promise to open the file and get its file size.
+will return a promise to open the file and get its file size.
 
 ```
 import Readlines from 'gen-readline';
@@ -25,7 +28,7 @@ import Readlines from 'gen-readline';
 	try {
 		let rl = await new Readlines('./test.txt');
 	} catch (err) {
-		throw new Error(err);
+		throw err;
 	}
 
 	for (let line of rl.lines()) {
@@ -44,8 +47,6 @@ var rl = new Readlines(fd, stats.size);
 for (var line of rl.lines()) {
 	console.log(line.toString());
 }
-
-fs.closeSync(fd);
 ```
 
 Credits

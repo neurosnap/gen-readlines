@@ -49,7 +49,7 @@ export default class Readlines {
       try {
         fs.readSync(this._fd, chunk, 0, tmpBufferSize, this._position);
       } catch (err) {
-        throw new Error(err);
+        throw err;
       }
 
       let data = chunk.toString();

@@ -18,5 +18,5 @@ new Readlines('./test.txt').then(function(ctx) {
     console.log(line.toString());
   }
 }).catch(function(err) {
-  console.log(err);
+  throw err;
 });
