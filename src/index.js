@@ -1,13 +1,15 @@
 'use strict';
-import polyfill from 'babel/polyfill';
-import fs from 'fs';
 
-var readlines = function* (fd, filesize, bufferSize) {
-  if (typeof bufferSize === 'undefined') bufferSize = 80;
-  yield* _readlines(fd, filesize, bufferSize, 0);
+import fs from 'fs';
+import polyfill from 'babel/polyfill';
+import { StringDecoder } from 'string_decoder';
+
+var readlines = function* (fd, filesize, encoding='utf8', bufferSize=80) {
+  let decoder = new StringDecoder(encoding);
+  yield* _readlines(fd, filesize, bufferSize, decoder, 0);
 };
 
-var _readlines = function* (fd, filesize, bufferSize, position, lineBuffer) {
+var _readlines = function* (fd, filesize, bufferSize, decoder, position, lineBuffer) {
   while (position < filesize) {
     let remaining = filesize - position;
     let tmpBufferSize = bufferSize;
@@ -20,20 +22,19 @@ var _readlines = function* (fd, filesize, bufferSize, position, lineBuffer) {
       throw new Error(err);
     }
 
-    let data = chunk.toString();
-    let found_newline = findLine(data);
+    let found_newline = newlineFound(chunk);
     if (found_newline === -1) {
       lineBuffer = concat(lineBuffer, chunk);
       position += tmpBufferSize;
-      yield* _readlines(fd, filesize, bufferSize, position, lineBuffer);
+      yield* _readlines(fd, filesize, bufferSize, decoder, position, lineBuffer);
       return;
     } else if (found_newline === 0) {
       position += 1;
-      yield* _readlines(fd, filesize, bufferSize, position, lineBuffer);
+      yield* _readlines(fd, filesize, bufferSize, decoder, position, lineBuffer);
       return;
     }
 
-    let newlineBuffer = new Buffer(data.substring(0, found_newline));
+    let newlineBuffer = new Buffer(chunk.slice(0, found_newline));
     position += newlineBuffer.length;
     yield concat(lineBuffer, newlineBuffer);
     lineBuffer = undefined;
@@ -48,8 +49,14 @@ function concat(buff_one, buff_two) {
   return Buffer.concat([buff_one, buff_two], new_length);
 }
 
-function findLine(chunk) {
-  return chunk.search(/\r\n|\r|\n/);
+function newlineFound(chunk) {
+  for (let i = 0; i < chunk.length; i++) {
+    if (chunk[i] == 13 || chunk[i] == 10) {
+      console.log('FOUND');
+      return i;
+    }
+  }
+  return -1;
 }
 
 module.exports = readlines;
