@@ -4,7 +4,7 @@ import fs from 'fs';
 
 import polyfill from 'babel/polyfill';
 
-var newline_chars = [
+var newlineChars = [
   13,
   10
 ];
@@ -19,21 +19,21 @@ var _readlines = function* (fd, filesize, bufferSize, position) {
     let remaining = filesize - position;
     if (remaining < bufferSize) bufferSize = remaining;
 
-    let read_chunk = new Buffer(bufferSize);
+    let readChunk = new Buffer(bufferSize);
     try {
-      fs.readSync(fd, read_chunk, 0, bufferSize, position);
+      fs.readSync(fd, readChunk, 0, bufferSize, position);
     } catch (err) {
       throw err;
     }
 
-    let found_newline = _foundNewline(read_chunk);
-    if (found_newline == -1) {
-      lineBuffer = _concat(lineBuffer, read_chunk);
+    let foundNewline = _foundNewline(readChunk);
+    if (foundNewline == -1) {
+      lineBuffer = _concat(lineBuffer, readChunk);
       position += bufferSize;
-    } else if (found_newline == 0) {
+    } else if (foundNewline == 0) {
       position += 1;
     } else {
-      let newlineBuffer = new Buffer(read_chunk.slice(0, found_newline));
+      let newlineBuffer = new Buffer(readChunk.slice(0, foundNewline));
       yield _concat(lineBuffer, newlineBuffer);
       position += newlineBuffer.length;
       lineBuffer = undefined;
@@ -43,21 +43,21 @@ var _readlines = function* (fd, filesize, bufferSize, position) {
   if (Buffer.isBuffer(lineBuffer)) yield lineBuffer;
 };
 
-function _foundNewline(read_chunk) {
-  for (let i = 0; i < read_chunk.length; i++) {
-    if (newline_chars.indexOf(read_chunk[i]) >= 0) {
+function _foundNewline(readChunk) {
+  for (let i = 0; i < readChunk.length; i++) {
+    if (newlineChars.indexOf(readChunk[i]) >= 0) {
       return i;
     }
   }
   return -1;
 }
 
-function _concat(buff_one, buff_two) {
-  if (!buff_one) return buff_two;
-  if (!buff_two) return buff_one;
+function _concat(buffOne, buffTwo) {
+  if (!buffOne) return buffTwo;
+  if (!buffTwo) return buffOne;
 
-  let new_length = buff_one.length + buff_two.length;
-  return Buffer.concat([buff_one, buff_two], new_length);
+  let newLength = buffOne.length + buffTwo.length;
+  return Buffer.concat([buffOne, buffTwo], newLength);
 }
 
 module.exports = readlines;
