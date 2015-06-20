@@ -2,13 +2,13 @@
   "name": "gen-readline",
   "version": "0.0.1",
   "description": "Generator line reader",
-  "main": "gen-linereader",
+  "main": "index",
   "scripts": {
     "test": "gulp test"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/neurosnap/gen-linereader.git"
+    "url": "git+ssh://git@github.com/neurosnap/gen-readlines.git"
   },
   "keywords": [
     "generator",
@@ -20,14 +20,17 @@
   "author": "Eric Bower",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/neurosnap/gen-linereader/issues"
+    "url": "https://github.com/neurosnap/gen-readlines/issues"
   },
-  "homepage": "https://github.com/neurosnap/gen-linereader#readme",
+  "homepage": "https://github.com/neurosnap/gen-readlines#readme",
   "dependencies": {
     "babel": "^5.4.7",
-    "co": "^4.5.4",
     "gulp": "^3.8.11",
     "gulp-babel": "^5.1.0",
     "gulp-util": "^3.0.4"
+  },
+  "devDependencies": {
+    "gulp-mocha": "^2.1.1",
+    "mocha": "^2.2.5"
   }
 }

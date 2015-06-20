@@ -22,7 +22,7 @@ var _readlines = function* (fd, filesize, bufferSize, position, lineBuffer) {
     try {
       fs.readSync(fd, chunk, 0, bufferSize, position);
     } catch (err) {
-      throw new Error(err);
+      throw err;
     }
 
     let found_newline = _foundNewline(chunk);

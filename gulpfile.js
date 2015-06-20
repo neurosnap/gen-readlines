@@ -3,12 +3,13 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var babel = require('gulp-babel');
+var mocha = require('gulp-mocha');
 
 gulp.task('default', ['babel']);
 
 gulp.task('babel', function() {
-  var src = './src/**/*.js';
-  var dist = './dist';
+  var src = './src/index.js';
+  var dist = './';
 
   gutil.log('Babel is generating ' + src + ' files to ' + dist + ' ...');
 
@@ -17,7 +18,12 @@ gulp.task('babel', function() {
     .pipe(gulp.dest(dist));
 });
 
+gulp.task('test', function() {
+    return gulp.src('./tests.js', { read: false })
+        .pipe(mocha());
+});
+
 gulp.task('watch', function() {
 	gutil.log('Watching node modules ...');
-	gulp.watch('./src/**/*.js', ['babel']);
+	gulp.watch('./src/index.js', ['babel']);
 });
