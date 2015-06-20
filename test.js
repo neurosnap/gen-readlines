@@ -8,4 +8,11 @@ for (var line of readlines(fd, stats.size)) {
   console.log(line.toString());
 }
 
+var list = [];
+for (var line of readlines(fd, stats.size)) {
+    list.push(line);
+}
+
+console.log(list.length);
+
 fs.closeSync(fd);
