@@ -10,25 +10,17 @@ var _babelPolyfill = require('babel/polyfill');
 
 var _babelPolyfill2 = _interopRequireDefault(_babelPolyfill);
 
-var newline_chars = [13, 10];
+var newlineChars = [13, 10];
 
-var readlines = regeneratorRuntime.mark(function readlines(fd, filesize) {
+function readlines(fd, filesize) {
   var bufferSize = arguments[2] === undefined ? 1024 : arguments[2];
   var position = arguments[3] === undefined ? 0 : arguments[3];
-  return regeneratorRuntime.wrap(function readlines$(context$1$0) {
-    while (1) switch (context$1$0.prev = context$1$0.next) {
-      case 0:
-        return context$1$0.delegateYield(_readlines(fd, filesize, bufferSize, position), 't0', 1);
 
-      case 1:
-      case 'end':
-        return context$1$0.stop();
-    }
-  }, readlines, this);
-});
+  return _readlines(fd, filesize, bufferSize, position);
+}
 
 var _readlines = regeneratorRuntime.mark(function _readlines(fd, filesize, bufferSize, position) {
-  var lineBuffer, remaining, read_chunk, found_newline, newlineBuffer;
+  var lineBuffer, remaining, readChunk, foundNewline, newlineBuffer;
   return regeneratorRuntime.wrap(function _readlines$(context$1$0) {
     while (1) switch (context$1$0.prev = context$1$0.next) {
       case 0:
@@ -36,94 +28,85 @@ var _readlines = regeneratorRuntime.mark(function _readlines(fd, filesize, buffe
 
       case 1:
         if (!(position < filesize)) {
-          context$1$0.next = 30;
+          context$1$0.next = 24;
           break;
         }
 
-        console.log(bufferSize);
         remaining = filesize - position;
 
         if (remaining < bufferSize) bufferSize = remaining;
 
-        read_chunk = new Buffer(bufferSize);
-        context$1$0.prev = 6;
+        readChunk = new Buffer(bufferSize);
+        context$1$0.prev = 5;
 
-        _fs2['default'].readSync(fd, read_chunk, 0, bufferSize, position);
-        context$1$0.next = 13;
+        _fs2['default'].readSync(fd, readChunk, 0, bufferSize, position);
+        context$1$0.next = 12;
         break;
 
-      case 10:
-        context$1$0.prev = 10;
-        context$1$0.t0 = context$1$0['catch'](6);
+      case 9:
+        context$1$0.prev = 9;
+        context$1$0.t0 = context$1$0['catch'](5);
         throw context$1$0.t0;
 
-      case 13:
-        found_newline = _foundNewline(read_chunk);
+      case 12:
+        foundNewline = _foundNewline(readChunk);
 
-        if (!(found_newline == -1)) {
-          context$1$0.next = 19;
+        if (!(foundNewline > 0)) {
+          context$1$0.next = 21;
           break;
         }
 
-        lineBuffer = _concat(lineBuffer, read_chunk);
-        position += bufferSize;
-        context$1$0.next = 28;
-        break;
-
-      case 19:
-        if (!(found_newline == 0)) {
-          context$1$0.next = 23;
-          break;
-        }
-
-        position += 1;
-        context$1$0.next = 28;
-        break;
-
-      case 23:
-        newlineBuffer = new Buffer(read_chunk.slice(0, found_newline));
-        context$1$0.next = 26;
+        newlineBuffer = new Buffer(readChunk.slice(0, foundNewline));
+        context$1$0.next = 17;
         return _concat(lineBuffer, newlineBuffer);
 
-      case 26:
+      case 17:
+
         position += newlineBuffer.length;
         lineBuffer = undefined;
+        context$1$0.next = 22;
+        break;
 
-      case 28:
+      case 21:
+        if (foundNewline == -1) {
+          position += bufferSize;
+          lineBuffer = _concat(lineBuffer, readChunk);
+        } else if (foundNewline == 0) {
+          position += 1;
+        }
+
+      case 22:
         context$1$0.next = 1;
         break;
 
-      case 30:
+      case 24:
         if (!Buffer.isBuffer(lineBuffer)) {
-          context$1$0.next = 33;
+          context$1$0.next = 27;
           break;
         }
 
-        context$1$0.next = 33;
+        context$1$0.next = 27;
         return lineBuffer;
 
-      case 33:
+      case 27:
       case 'end':
         return context$1$0.stop();
     }
-  }, _readlines, this, [[6, 10]]);
+  }, _readlines, this, [[5, 9]]);
 });
 
-function _foundNewline(read_chunk) {
-  for (var i = 0; i < read_chunk.length; i++) {
-    if (newline_chars.indexOf(read_chunk[i]) >= 0) {
-      return i;
-    }
-  }
-  return -1;
+function _foundNewline(readChunk) {
+  for (var i = 0; i < readChunk.length; i++) {
+    if (newlineChars.indexOf(readChunk[i]) >= 0) return i;
+  }return -1;
 }
 
-function _concat(buff_one, buff_two) {
-  if (!buff_one) return buff_two;
-  if (!buff_two) return buff_one;
-  var new_length = buff_one.length + buff_two.length;
+function _concat(buffOne, buffTwo) {
+  if (!buffOne) return buffTwo;
+  if (!buffTwo) return buffOne;
 
-  return Buffer.concat([buff_one, buff_two], new_length);
+  var newLength = buffOne.length + buffTwo.length;
+  return Buffer.concat([buffOne, buffTwo], newLength);
 }
 
 module.exports = readlines;

@@ -9,9 +9,9 @@ var newlineChars = [
   10
 ];
 
-var readlines = function* (fd, filesize, bufferSize=1024, position=0) {
-  yield* _readlines(fd, filesize, bufferSize, position);
-};
+function readlines(fd, filesize, bufferSize=1024, position=0) {
+  return _readlines(fd, filesize, bufferSize, position);
+}
 
 var _readlines = function* (fd, filesize, bufferSize, position) {
   let lineBuffer;
@@ -27,16 +27,17 @@ var _readlines = function* (fd, filesize, bufferSize, position) {
     }
 
     let foundNewline = _foundNewline(readChunk);
-    if (foundNewline == -1) {
-      lineBuffer = _concat(lineBuffer, readChunk);
-      position += bufferSize;
-    } else if (foundNewline == 0) {
-      position += 1;
-    } else {
+    if (foundNewline > 0) {
       let newlineBuffer = new Buffer(readChunk.slice(0, foundNewline));
       yield _concat(lineBuffer, newlineBuffer);
+
       position += newlineBuffer.length;
       lineBuffer = undefined;
+    } else if (foundNewline == -1) {
+      position += bufferSize;
+      lineBuffer = _concat(lineBuffer, readChunk);
+    } else if (foundNewline == 0) {
+      position += 1;
     }
   }
   // dump what ever is left in the buffer
@@ -44,11 +45,8 @@ var _readlines = function* (fd, filesize, bufferSize, position) {
 };
 
 function _foundNewline(readChunk) {
-  for (let i = 0; i < readChunk.length; i++) {
-    if (newlineChars.indexOf(readChunk[i]) >= 0) {
-      return i;
-    }
-  }
+  for (let i = 0; i < readChunk.length; i++)
+    if (newlineChars.indexOf(readChunk[i]) >= 0) return i;
   return -1;
 }
 
