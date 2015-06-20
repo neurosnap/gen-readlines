@@ -1,7 +1,7 @@
 {
   "name": "gen-readline",
   "version": "0.0.1",
-  "description": "Generator line reader",
+  "description": "Generator based line reader",
   "main": "index",
   "scripts": {
     "test": "gulp test"

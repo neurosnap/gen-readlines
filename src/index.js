@@ -9,41 +9,43 @@ var newline_chars = [
   10
 ];
 
-var readlines = function* (fd, filesize, bufferSize=1024) {
-  yield* _readlines(fd, filesize, bufferSize, 0);
+var readlines = function* (fd, filesize, bufferSize=1024, position=0) {
+  yield* _readlines(fd, filesize, bufferSize, position);
 };
 
-var _readlines = function* (fd, filesize, bufferSize, position, lineBuffer) {
+var _readlines = function* (fd, filesize, bufferSize, position) {
+  let lineBuffer;
   while (position < filesize) {
     let remaining = filesize - position;
     if (remaining < bufferSize) bufferSize = remaining;
 
-    let chunk = new Buffer(bufferSize);
+    let read_chunk = new Buffer(bufferSize);
     try {
-      fs.readSync(fd, chunk, 0, bufferSize, position);
+      fs.readSync(fd, read_chunk, 0, bufferSize, position);
     } catch (err) {
       throw err;
     }
 
-    let found_newline = _foundNewline(chunk);
+    let found_newline = _foundNewline(read_chunk);
     if (found_newline == -1) {
-      lineBuffer = _concat(lineBuffer, chunk);
+      lineBuffer = _concat(lineBuffer, read_chunk);
       position += bufferSize;
     } else if (found_newline == 0) {
       position += 1;
     } else {
-      let newlineBuffer = new Buffer(chunk.slice(0, found_newline));
+      let newlineBuffer = new Buffer(read_chunk.slice(0, found_newline));
       yield _concat(lineBuffer, newlineBuffer);
       position += newlineBuffer.length;
       lineBuffer = undefined;
     }
   }
+  // dump what ever is left in the buffer
   if (Buffer.isBuffer(lineBuffer)) yield lineBuffer;
 };
 
-function _foundNewline(chunk) {
-  for (let i = 0; i < chunk.length; i++) {
-    if (newline_chars.indexOf(chunk[i]) >= 0) {
+function _foundNewline(read_chunk) {
+  for (let i = 0; i < read_chunk.length; i++) {
+    if (newline_chars.indexOf(read_chunk[i]) >= 0) {
       return i;
     }
   }
@@ -53,8 +55,8 @@ function _foundNewline(chunk) {
 function _concat(buff_one, buff_two) {
   if (!buff_one) return buff_two;
   if (!buff_two) return buff_one;
-  let new_length = buff_one.length + buff_two.length;
 
+  let new_length = buff_one.length + buff_two.length;
   return Buffer.concat([buff_one, buff_two], new_length);
 }
 
