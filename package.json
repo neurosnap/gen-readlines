@@ -1,5 +1,5 @@
 {
-  "name": "gen-readline",
+  "name": "gen-readlines",
   "version": "0.0.1",
   "description": "Generator based line reader",
   "main": "index",
@@ -15,7 +15,10 @@
     "file",
     "line",
     "reader",
-    "by"
+    "read",
+    "by",
+    "es6",
+    "ecma2015"
   ],
   "author": "Eric Bower",
   "license": "MIT",
@@ -23,14 +26,11 @@
     "url": "https://github.com/neurosnap/gen-readlines/issues"
   },
   "homepage": "https://github.com/neurosnap/gen-readlines#readme",
-  "dependencies": {
-    "babel": "^5.4.7",
-    "gulp": "^3.8.11",
-    "gulp-babel": "^5.1.0",
-    "gulp-util": "^3.0.4"
-  },
+  "dependencies": {},
   "devDependencies": {
     "gulp-mocha": "^2.1.1",
-    "mocha": "^2.2.5"
+    "mocha": "^2.2.5",
+    "gulp": "^3.8.11",
+    "gulp-util": "^3.0.4"
   }
 }
