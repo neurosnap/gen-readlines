@@ -4,7 +4,7 @@
   "description": "Generator based line reader",
   "main": "index",
   "scripts": {
-    "test": "gulp test"
+    "test": "node --harmony `which gulp` test"
   },
   "repository": {
     "type": "git",
