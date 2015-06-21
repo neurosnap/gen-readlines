@@ -1,4 +1,4 @@
-Generator Line Reader
+Generator Line Reader [![Build Status](https://travis-ci.org/neurosnap/gen-readlines.svg?branch=master)](https://travis-ci.org/neurosnap/gen-readlines)
 =====================
 
 Generator based line reader that only blocks when reading a line.
