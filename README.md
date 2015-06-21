@@ -73,13 +73,7 @@ Documentation
 Testing
 -------
 
-We are using `gulp-mocha` for unit testing
-
-```
-gulp test
-```
-
--OR-
+We are using `mocha` for unit testing
 
 ```
 npm test

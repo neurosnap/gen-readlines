@@ -4,7 +4,7 @@
   "description": "Generator based line reader",
   "main": "index",
   "scripts": {
-    "test": "node --harmony `which gulp` test"
+    "test": "mocha --harmony -R spec tests.js"
   },
   "repository": {
     "type": "git",
@@ -28,9 +28,6 @@
   "homepage": "https://github.com/neurosnap/gen-readlines#readme",
   "dependencies": {},
   "devDependencies": {
-    "gulp-mocha": "^2.1.1",
-    "mocha": "^2.2.5",
-    "gulp": "^3.8.11",
-    "gulp-util": "^3.0.4"
+    "mocha": "^2.2.5"
   }
 }
