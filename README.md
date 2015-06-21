@@ -3,6 +3,13 @@ Generator Line Reader [![Build Status](https://travis-ci.org/neurosnap/gen-readl
 
 Generator based line reader that only blocks when reading a line.
 
+Install
+-------
+
+```
+npm install gen-readlines
+```
+
 Usage
 -----
 
