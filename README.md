@@ -18,7 +18,7 @@ create a generator which will iterate through all the lines in that file.
 
 ```
 var fs = require('fs');
-var readlines = require('readlines');
+var readlines = require('gen-readlines');
 
 var fd = fs.openSync('./test_data/hipster.txt', 'r');
 var stats = fs.fstatSync(fd);
