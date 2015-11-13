@@ -9,8 +9,7 @@ var stats = fs.fstatSync(fd);
 var timer = process.hrtime();
 
 for (var line of readlines(fd, stats.size)) {
-    //console.log(line.toString());
-    //line.toString();
+    console.log(line.toString());
 }
 
 var diff = process.hrtime(timer);
