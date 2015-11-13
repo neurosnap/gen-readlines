@@ -1,6 +1,6 @@
 {
   "name": "gen-readlines",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Generator based line reader",
   "main": "index",
   "scripts": {
