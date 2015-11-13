@@ -17,13 +17,13 @@ describe('The hipster file', function() {
     fs.closeSync(fd);
   });
 
-  it('should return 22 lines', function() {
+  it('should return 24 lines', function() {
     var lines = [];
     for (var line of readlines(fd, stats.size)) {
       lines.push(line);
     }
 
-    assert.equal(22, lines.length);
+    assert.equal(24, lines.length);
   });
 });
 
@@ -61,13 +61,13 @@ describe('The multibyte file', function() {
     fs.closeSync(fd);
   });
 
-  it('should return 3 lines', function() {
+  it('should return 4 lines', function() {
     var lines = [];
     for (var line of readlines(fd, stats.size)) {
       lines.push(line);
     }
 
-    assert.equal(3, lines.length);
+    assert.equal(4, lines.length);
   });
 });
 
@@ -83,12 +83,13 @@ describe('The normal file', function() {
     fs.closeSync(fd);
   });
 
-  it('should return 3 lines', function() {
+  it('should return 6 lines', function() {
     var lines = [];
     for (var line of readlines(fd, stats.size)) {
       lines.push(line);
     }
-    assert.equal(3, lines.length);
+
+    assert.equal(6, lines.length);
   });
 });
 
@@ -151,10 +152,28 @@ describe('File with empty lines', function() {
   it('should return 4 lines', function() {
     var lines = [];
     for (var line of readlines(fd, stats.size)) {
-      lines.push(line);
+      lines.push(line.toString());
     }
 
     assert.equal(4, lines.length);
+  });
+
+  it('should return the correct text for each line', function() {
+    var lines = [];
+    for (var line of readlines(fd, stats.size)) {
+      lines.push(line.toString());
+    }
+
+    var expected_lines = [
+      'Here is one line with text.\n',
+      '\n',
+      '\n',
+      'Here is another line with gaps between.\n'
+    ];
+
+    for (var i = 0; i < lines.length; i++) {
+      assert.equal(lines[i], expected_lines[i]);
+    }
   });
 });
 

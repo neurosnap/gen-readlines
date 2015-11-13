@@ -33,8 +33,8 @@ function* readlines(fd, filesize, bufferSize, position) {
     }
 
     let foundNewline = _foundNewline(readChunk);
-    if (foundNewline > 0) {
-      let newlineBuffer = new Buffer(readChunk.slice(0, foundNewline));
+    if (foundNewline >= 0) {
+      let newlineBuffer = new Buffer(readChunk.slice(0, foundNewline+1));
       yield _concat(lineBuffer, newlineBuffer);
 
       position += newlineBuffer.length;
@@ -42,8 +42,6 @@ function* readlines(fd, filesize, bufferSize, position) {
     } else if (foundNewline == -1) {
       position += bufferSize;
       lineBuffer = _concat(lineBuffer, readChunk);
-    } else if (foundNewline == 0) {
-      position += 1;
     }
   }
   // dump what ever is left in the buffer
