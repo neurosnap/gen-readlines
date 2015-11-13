@@ -18,27 +18,20 @@ function* readlines(fd, filesize, bufferSize, position) {
   if (typeof bufferSize === 'undefined') bufferSize = 1024;
   if (typeof position === 'undefined') position = 0;
 
+  let readChunk = new Buffer(bufferSize);
   let lineBuffer;
   while (position < filesize) {
     let remaining = filesize - position;
     if (remaining < bufferSize) bufferSize = remaining;
 
-    let readChunk = new Buffer(bufferSize);
-    let curpos = 0;
-    let startpos = 0;
-    let bytesRead;
-    try {
-      bytesRead = fs.readSync(fd, readChunk, 0, bufferSize, position);
-    } catch (err) {
-      throw err;
-    }
+    let bytesRead = fs.readSync(fd, readChunk, 0, bufferSize, position);
 
+    let curpos = 0, startpos = 0;
     let seenCR = false;
-    let atend = false;
+    let atend, curbyte, nextbyte;
     while (curpos < bytesRead) {
-      let curbyte = readChunk[curpos];
-      let nextbyte = null;
-      let atend = curpos >= bytesRead - 1;
+      curbyte = readChunk[curpos];
+      atend = curpos >= bytesRead - 1;
       if (!atend) {
         nextbyte = readChunk[curpos+1];
       }
