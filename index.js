@@ -2,10 +2,8 @@
 
 var fs = require('fs');
 
-var newlineChars = [
-  13,
-  10
-];
+var LF = 10;
+var CR = 13;
 
 /**
  * Generator based line reader
@@ -20,45 +18,41 @@ function* readlines(fd, filesize, bufferSize, position) {
   if (typeof bufferSize === 'undefined') bufferSize = 1024;
   if (typeof position === 'undefined') position = 0;
 
+  let readChunk = new Buffer(bufferSize);
   let lineBuffer;
   while (position < filesize) {
     let remaining = filesize - position;
     if (remaining < bufferSize) bufferSize = remaining;
 
-    let readChunk = new Buffer(bufferSize);
-    try {
-      fs.readSync(fd, readChunk, 0, bufferSize, position);
-    } catch (err) {
-      throw err;
+    let bytesRead = fs.readSync(fd, readChunk, 0, bufferSize, position);
+
+    let curpos = 0, startpos = 0;
+    let seenCR = false;
+    let atend, curbyte;
+    while (curpos < bytesRead) {
+      curbyte = readChunk[curpos];
+      atend = curpos >= bytesRead - 1;
+      // skip LF if seenCR before or yield
+      if (curbyte == LF && !seenCR || curbyte == CR && !atend) {
+        yield _concat(lineBuffer, readChunk.slice(startpos, curpos));
+        lineBuffer = undefined;
+        startpos = curpos + 1;
+        if (curbyte == CR && readChunk[curpos+1] == LF) {
+          startpos++;
+          curpos++;
+        }
+      }
+      seenCR = curbyte == CR && atend;
+      curpos++;
     }
-
-    let foundNewline = _foundNewline(readChunk);
-    if (foundNewline >= 0) {
-      let newlineBuffer = new Buffer(readChunk.slice(0, foundNewline+1));
-      yield _concat(lineBuffer, newlineBuffer);
-
-      position += newlineBuffer.length;
-      lineBuffer = undefined;
-    } else if (foundNewline == -1) {
-      position += bufferSize;
-      lineBuffer = _concat(lineBuffer, readChunk);
+    position += bytesRead;
+    if (startpos < bytesRead) {
+      lineBuffer = _concat(lineBuffer, readChunk.slice(startpos));
     }
   }
   // dump what ever is left in the buffer
   if (Buffer.isBuffer(lineBuffer)) yield lineBuffer;
 };
-
-/**
- * Determines if a new line character is in the buffer object
- *
- * @param {Object} [readChunk] Buffer object
- * @return {Number} The position of the new line character
- */
-function _foundNewline(readChunk) {
-  for (let i = 0; i < readChunk.length; i++)
-    if (newlineChars.indexOf(readChunk[i]) >= 0) return i;
-  return -1;
-}
 
 /**
  * Combines two buffers
@@ -69,7 +63,6 @@ function _foundNewline(readChunk) {
  */
 function _concat(buffOne, buffTwo) {
   if (!buffOne) return buffTwo;
-  if (!buffTwo) return buffOne;
 
   let newLength = buffOne.length + buffTwo.length;
   return Buffer.concat([buffOne, buffTwo], newLength);

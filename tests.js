@@ -27,6 +27,28 @@ describe('The hipster file', function() {
   });
 });
 
+describe('The hipster windos file', function() {
+  var fd, stats;
+
+  before(function() {
+    fd = fs.openSync('./test_data/hipster_windos.txt', 'r');
+    stats = fs.statSync('./test_data/hipster_windos.txt');
+  });
+
+  after(function() {
+    fs.closeSync(fd);
+  });
+
+  it('should return 24 lines', function() {
+    var lines = [];
+    for (var line of readlines(fd, stats.size, 1)) {
+      lines.push(line);
+    }
+
+    assert.equal(24, lines.length);
+  });
+});
+
 describe('The empty file', function() {
   var fd, stats;
 
@@ -64,6 +86,28 @@ describe('The multibyte file', function() {
   it('should return 4 lines', function() {
     var lines = [];
     for (var line of readlines(fd, stats.size)) {
+      lines.push(line);
+    }
+
+    assert.equal(4, lines.length);
+  });
+});
+
+describe('The multibyte windos file', function() {
+  var fd, stats;
+
+  before(function() {
+    fd = fs.openSync('./test_data/multibyte_windos_file.txt', 'r');
+    stats = fs.statSync('./test_data/multibyte_windos_file.txt');
+  });
+
+  after(function() {
+    fs.closeSync(fd);
+  });
+
+  it('should return 4 lines', function() {
+    var lines = [];
+    for (var line of readlines(fd, stats.size, 1)) {
       lines.push(line);
     }
 
@@ -165,14 +209,14 @@ describe('File with empty lines', function() {
     }
 
     var expected_lines = [
-      'Here is one line with text.\n',
-      '\n',
-      '\n',
-      'Here is another line with gaps between.\n'
+      'Here is one line with text.',
+      '',
+      '',
+      'Here is another line with gaps between.'
     ];
 
     for (var i = 0; i < lines.length; i++) {
-      assert.equal(lines[i], expected_lines[i]);
+      assert.equal(expected_lines[i], lines[i]);
     }
   });
 });
