@@ -28,26 +28,18 @@ function* readlines(fd, filesize, bufferSize, position) {
 
     let curpos = 0, startpos = 0;
     let seenCR = false;
-    let atend, curbyte, nextbyte;
+    let atend, curbyte;
     while (curpos < bytesRead) {
       curbyte = readChunk[curpos];
       atend = curpos >= bytesRead - 1;
-      if (!atend) {
-        nextbyte = readChunk[curpos+1];
-      }
-      // skip LF if seenCR before
-      if (curbyte == LF && !seenCR || curbyte == CR) {
-        // can yield?
-        if (curbyte == LF || curbyte == CR && (nextbyte == LF || nextbyte != LF && !atend)) {
-          yield _concat(lineBuffer, readChunk.slice(startpos, curpos));
-          lineBuffer = undefined;
-          if (curbyte == LF || nextbyte != LF && !atend) {
-            startpos = curpos + 1;
-          }
-          else {
-            startpos = curpos + 2;
-            curpos++;
-          }
+      // skip LF if seenCR before or yield
+      if (curbyte == LF && !seenCR || curbyte == CR && !atend) {
+        yield _concat(lineBuffer, readChunk.slice(startpos, curpos));
+        lineBuffer = undefined;
+        startpos = curpos + 1;
+        if (curbyte == CR && readChunk[curpos+1] == LF) {
+          startpos++;
+          curpos++;
         }
       }
       seenCR = curbyte == CR && atend;
@@ -71,7 +63,6 @@ function* readlines(fd, filesize, bufferSize, position) {
  */
 function _concat(buffOne, buffTwo) {
   if (!buffOne) return buffTwo;
-  if (!buffTwo) return buffOne;
 
   let newLength = buffOne.length + buffTwo.length;
   return Buffer.concat([buffOne, buffTwo], newLength);
