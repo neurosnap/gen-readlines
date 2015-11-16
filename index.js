@@ -18,12 +18,12 @@ function* readlines(fd, filesize, bufferSize, position) {
   if (typeof bufferSize === 'undefined') bufferSize = 1024;
   if (typeof position === 'undefined') position = 0;
 
-  let readChunk = new Buffer(bufferSize);
   let lineBuffer;
   while (position < filesize) {
     let remaining = filesize - position;
     if (remaining < bufferSize) bufferSize = remaining;
 
+    let readChunk = new Buffer(bufferSize);
     let bytesRead = fs.readSync(fd, readChunk, 0, bufferSize, position);
 
     let curpos = 0, startpos = 0;
@@ -47,7 +47,7 @@ function* readlines(fd, filesize, bufferSize, position) {
     }
     position += bytesRead;
     if (startpos < bytesRead) {
-      lineBuffer = _concat(lineBuffer, readChunk.slice(startpos));
+      lineBuffer = _concat(lineBuffer, readChunk.slice(startpos, bytesRead));
     }
   }
   // dump what ever is left in the buffer
@@ -63,6 +63,7 @@ function* readlines(fd, filesize, bufferSize, position) {
  */
 function _concat(buffOne, buffTwo) {
   if (!buffOne) return buffTwo;
+  if (!buffTwo) return buffOne;
 
   let newLength = buffOne.length + buffTwo.length;
   return Buffer.concat([buffOne, buffTwo], newLength);

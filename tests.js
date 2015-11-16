@@ -6,11 +6,16 @@ var assert = require('assert');
 var readlines = require('./index');
 
 describe('The hipster file', function() {
-  var fd, stats;
+  var fd, stats, expectedLines, actualLines;
 
   before(function() {
     fd = fs.openSync('./test_data/hipster.txt', 'r');
     stats = fs.statSync('./test_data/hipster.txt');
+    expectedLines = fs.readFileSync('./test_data/hipster.txt').toString().split('\n');
+    actualLines = [];
+    for (var line of readlines(fd, stats.size)) {
+      actualLines.push(line.toString());
+    }
   });
 
   after(function() {
@@ -18,21 +23,31 @@ describe('The hipster file', function() {
   });
 
   it('should return 24 lines', function() {
-    var lines = [];
-    for (var line of readlines(fd, stats.size)) {
-      lines.push(line);
-    }
+    assert.equal(actualLines.length, 24);
+  });
 
-    assert.equal(24, lines.length);
+  it('parsed lines must match original lines', function() {
+    assert.deepEqual(actualLines, expectedLines);
+  });
+
+  it('parsed lines must not contain \\n', function() {
+    actualLines.forEach(function(line) {
+      assert.ok(/\\n/.exec(line) === null);
+    });
   });
 });
 
 describe('The hipster windos file', function() {
-  var fd, stats;
+  var fd, stats, expectedLines, actualLines;
 
   before(function() {
     fd = fs.openSync('./test_data/hipster_windos.txt', 'r');
     stats = fs.statSync('./test_data/hipster_windos.txt');
+    expectedLines = fs.readFileSync('./test_data/hipster_windos.txt').toString().split('\r\n');
+    actualLines = [];
+    for (var line of readlines(fd, stats.size)) {
+      actualLines.push(line.toString());
+    }
   });
 
   after(function() {
@@ -40,12 +55,17 @@ describe('The hipster windos file', function() {
   });
 
   it('should return 24 lines', function() {
-    var lines = [];
-    for (var line of readlines(fd, stats.size, 1)) {
-      lines.push(line);
-    }
+    assert.equal(actualLines.length, 24);
+  });
 
-    assert.equal(24, lines.length);
+  it('parsed lines must match original lines', function() {
+    assert.deepEqual(actualLines, expectedLines);
+  });
+
+  it('parsed lines must not contain \\r nor \\n', function() {
+    actualLines.forEach(function(line) {
+      assert.ok(/\\r|\\n/.exec(line) === null);
+    });
   });
 });
 
