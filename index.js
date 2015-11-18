@@ -19,6 +19,7 @@ function* readlines(fd, filesize, bufferSize, position) {
   if (typeof position === 'undefined') position = 0;
 
   let lineBuffer;
+
   while (position < filesize) {
     let remaining = filesize - position;
     if (remaining < bufferSize) bufferSize = remaining;
@@ -32,19 +33,23 @@ function* readlines(fd, filesize, bufferSize, position) {
       // skip LF if last chunk ended in CR
       if (curbyte == LF && lastbyte != CR || curbyte == CR && curpos < bytesRead - 1) {
         yield _concat(lineBuffer, readChunk.slice(startpos, curpos));
+
         lineBuffer = undefined;
         startpos = curpos + 1;
-        if (curbyte == CR && readChunk[curpos+1] == LF) {
+
+        if (curbyte == CR && readChunk[curpos + 1] == LF) {
           startpos++;
           curpos++;
         }
-      }
-      else if (curbyte == CR && curpos >= bytesRead - 1) {
+      } else if (curbyte == CR && curpos >= bytesRead - 1) {
         lastbyte = curbyte;
       }
+
       curpos++;
     }
+
     position += bytesRead;
+
     if (startpos < bytesRead) {
       lineBuffer = _concat(lineBuffer, readChunk.slice(startpos, bytesRead));
     }

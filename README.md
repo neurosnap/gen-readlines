@@ -70,11 +70,11 @@ Compatibility
 Documentation
 -------------
 
-#### readlines (fd, filesize, bufferSize=1024, position=0)
+#### readlines (fd, filesize, bufferSize=64\*1024, position=0)
 
  * fd {Number} The file descriptor
  * filesize {Number} The size of the file in bytes
- * bufferSize {Number} The size of the buffer in bytes, default: 1024
+ * bufferSize {Number} The size of the buffer in bytes, default: 64\*1024
  * position {Number} The position where to start reading the file in bytes, default: 0
 
 Testing
