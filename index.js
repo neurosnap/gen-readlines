@@ -15,7 +15,7 @@ var CR = 13;
  * @return {Object} The generator object
  */
 function* readlines(fd, filesize, bufferSize, position) {
-  if (typeof bufferSize === 'undefined') bufferSize = 1024;
+  if (typeof bufferSize === 'undefined') bufferSize = 64 * 1024;
   if (typeof position === 'undefined') position = 0;
 
   let lineBuffer;
@@ -26,14 +26,11 @@ function* readlines(fd, filesize, bufferSize, position) {
     let readChunk = new Buffer(bufferSize);
     let bytesRead = fs.readSync(fd, readChunk, 0, bufferSize, position);
 
-    let curpos = 0, startpos = 0;
-    let seenCR = false;
-    let atend, curbyte;
+    let curpos = 0, startpos = 0, lastbyte = null, curbyte;
     while (curpos < bytesRead) {
       curbyte = readChunk[curpos];
-      atend = curpos >= bytesRead - 1;
-      // skip LF if seenCR before or yield
-      if (curbyte == LF && !seenCR || curbyte == CR && !atend) {
+      // skip LF if last chunk ended in CR
+      if (curbyte == LF && lastbyte != CR || curbyte == CR && curpos < bytesRead - 1) {
         yield _concat(lineBuffer, readChunk.slice(startpos, curpos));
         lineBuffer = undefined;
         startpos = curpos + 1;
@@ -42,7 +39,9 @@ function* readlines(fd, filesize, bufferSize, position) {
           curpos++;
         }
       }
-      seenCR = curbyte == CR && atend;
+      else if (curbyte == CR && curpos >= bytesRead - 1) {
+        lastbyte = curbyte;
+      }
       curpos++;
     }
     position += bytesRead;
