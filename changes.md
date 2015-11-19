@@ -1,6 +1,11 @@
 Changes
 =======
 
+v0.1.2
+------
+
+* More optimizations
+
 v0.1.1
 ------
 
