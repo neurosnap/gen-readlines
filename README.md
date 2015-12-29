@@ -1,7 +1,8 @@
-Generator Line Reader [![Build Status](https://travis-ci.org/neurosnap/gen-readlines.svg?branch=master)](https://travis-ci.org/neurosnap/gen-readlines)
+gen-readlines [![Build Status](https://travis-ci.org/neurosnap/gen-readlines.svg?branch=master)](https://travis-ci.org/neurosnap/gen-readlines)
 =====================
 
-Generator based line reader that only blocks when reading a line.
+A generator based line reader. This node package will return the lines of a file
+as a generator when given file descriptor and the size of the file.
 
 Install
 -------
@@ -86,7 +87,3 @@ We are using `mocha` for unit testing
 npm test
 ```
 
-Credits
--------
-
-* Eric Bower
