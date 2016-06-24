@@ -1,6 +1,13 @@
 Changes
 =======
 
+v0.1.3
+------
+
+* Added `eslint` to the project
+* Updated documentation to use `let` instead of `var`
+* Added multiple versions of `node` to travis
+
 v0.1.2
 ------
 
