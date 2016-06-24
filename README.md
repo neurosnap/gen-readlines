@@ -4,6 +4,16 @@ gen-readlines [![Build Status](https://travis-ci.org/neurosnap/gen-readlines.svg
 A generator based line reader. This node package will return the lines of a file
 as a generator when given file descriptor and the size of the file.
 
+Why?
+---
+
+I created this project primarily for better flow control of reading lines in a file.
+Instead of using callbacks for reading lines within a file, this will use a generator which has some unique benefits.
+
+* Because it is a generator, the lines of the file are not stored in a large array
+* Code is synchronous, so you don't have to worry about the asynchronous effects of waiting for a callback
+* Performant, our micro-benchmark demonstrates it can compete with callback-based line readers and in fact appears to be faster.
+
 Install
 -------
 
@@ -14,7 +24,7 @@ npm install gen-readlines
 Usage
 -----
 
-Provide readlines with a file descriptor and the size of the file and it will
+Provide `gen-readlines` with a file descriptor and the size of the file and it will
 create a generator which will iterate through all the lines in that file.
 
 ```
@@ -66,7 +76,6 @@ Compatibility
 -------------
 
 * node 0.11.x or greater, with `--harmony-generators` flag or `--harmony` to get access to generators.
-* io.js is supported without any flags.
 
 Documentation
 -------------
@@ -90,7 +99,7 @@ npm test
 Performance
 -----------
 
-`./perf` contains a microbenchmark, ran each benchmark five times and then averaged the results:
+`./perf` contains a micro-benchmark, ran each benchmark five times and then averaged the results:
 
 | Package       | Runtime (nanoseconds) |
 |---------------|-----------------------|
