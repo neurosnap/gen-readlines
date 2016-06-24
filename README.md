@@ -103,6 +103,8 @@ Performance
 
 | Package       | Runtime (nanoseconds) |
 |---------------|-----------------------|
+| readline      | 17769036.4            |
 | gen-readlines | 24480520.4            |
 | linebyline    | 26549054.2            |
+| byline        | 41573681.0            |
 | line-reader   | 58315530.0            |

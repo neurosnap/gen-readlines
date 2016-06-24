@@ -29,6 +29,7 @@
   "homepage": "https://github.com/neurosnap/gen-readlines#readme",
   "dependencies": {},
   "devDependencies": {
+    "byline": "^4.2.1",
     "eslint": "^2.13.1",
     "line-reader": "^0.4.0",
     "linebyline": "^1.3.0",

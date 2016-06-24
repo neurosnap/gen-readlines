@@ -20,7 +20,7 @@
     "no-unused-vars": 1,
     "no-use-before-define": [2, "nofunc"],
     "no-var": 2,
-    "object-curly-spacing": [2, "never"],
+    "object-curly-spacing": [2, "always"],
     "one-var": [2, "never"],
     "quotes": [2, "single", "avoid-escape"],
     "semi": [2, "always"],
