@@ -1,9 +1,9 @@
 'use strict';
 
-var fs = require('fs');
+const fs = require('fs');
 
-var LF = 10;
-var CR = 13;
+const LF = 10;
+const CR = 13;
 
 /**
  * Generator based line reader
@@ -27,21 +27,24 @@ function* readlines(fd, filesize, bufferSize, position) {
     let readChunk = new Buffer(bufferSize);
     let bytesRead = fs.readSync(fd, readChunk, 0, bufferSize, position);
 
-    let curpos = 0, startpos = 0, lastbyte = null, curbyte;
+    let curpos = 0;
+    let startpos = 0;
+    let lastbyte = null;
+    let curbyte;
     while (curpos < bytesRead) {
       curbyte = readChunk[curpos];
       // skip LF if last chunk ended in CR
-      if (curbyte == LF && lastbyte != CR || curbyte == CR && curpos < bytesRead - 1) {
+      if (curbyte === LF && lastbyte !== CR || curbyte === CR && curpos < bytesRead - 1) {
         yield _concat(lineBuffer, readChunk.slice(startpos, curpos));
 
         lineBuffer = undefined;
         startpos = curpos + 1;
 
-        if (curbyte == CR && readChunk[curpos + 1] == LF) {
+        if (curbyte === CR && readChunk[curpos + 1] === LF) {
           startpos++;
           curpos++;
         }
-      } else if (curbyte == CR && curpos >= bytesRead - 1) {
+      } else if (curbyte === CR && curpos >= bytesRead - 1) {
         lastbyte = curbyte;
       }
 

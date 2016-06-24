@@ -4,7 +4,8 @@
   "description": "Generator based line reader",
   "main": "index",
   "scripts": {
-    "test": "mocha --harmony -R spec tests.js"
+    "test": "mocha --harmony -R spec tests.js",
+    "lint": "eslint *.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
   "homepage": "https://github.com/neurosnap/gen-readlines#readme",
   "dependencies": {},
   "devDependencies": {
+    "eslint": "^2.13.1",
     "mocha": "^2.2.5"
   }
 }

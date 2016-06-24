@@ -1,15 +1,11 @@
 'use strict';
 
-var readline = require('linebyline');
+const readline = require('linebyline');
+const timer = process.hrtime();
+const rl = readline('./tale_two_cities.txt');
 
-var timer = process.hrtime();
-
-var rl = readline('./tale_two_cities.txt');
-
-rl.on('line', function(line, lineCount, byteCount) {
-})
-.on('end', function(line, lineCount, byteCount) {
-    var diff = process.hrtime(timer);
+rl.on('line', function() {})
+  .on('end', function() {
+    const diff = process.hrtime(timer);
     console.log('Benchmark took %d nanoseconds', diff[0] * 1e9 + diff[1]);
-});
-
+  });

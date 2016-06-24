@@ -24,8 +24,8 @@ var readlines = require('gen-readlines');
 var fd = fs.openSync('./test_data/hipster.txt', 'r');
 var stats = fs.fstatSync(fd);
 
-for (var line of readlines(fd, stats.size)) {
-	console.log(line.toString());
+for (let line of readlines(fd, stats.size)) {
+  console.log(line.toString());
 }
 
 fs.closeSync(fd);
@@ -37,7 +37,7 @@ fs.open('./test_data/hipster.txt', 'r', function(err, fd) {
   fs.fstat(fd, function(err, stats) {
     if (err) throw err;
 
-    for (var line of readlines(fd, stats.size)) {
+    for (let line of readlines(fd, stats.size)) {
       console.log(line.toString());
     }
 
@@ -86,4 +86,3 @@ We are using `mocha` for unit testing
 ```
 npm test
 ```
-
