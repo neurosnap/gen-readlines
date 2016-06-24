@@ -86,3 +86,14 @@ We are using `mocha` for unit testing
 ```
 npm test
 ```
+
+Performance
+-----------
+
+`./perf` contains a microbenchmark, ran each benchmark five times and then averaged the results:
+
+| Package       | Runtime (nanoseconds) |
+|---------------|-----------------------|
+| gen-readlines | 24480520.4            |
+| linebyline    | 26549054.2            |
+| line-reader   | 58315530.0            |
