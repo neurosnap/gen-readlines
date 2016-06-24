@@ -1,19 +1,22 @@
 'use strict';
 
-var fs = require('fs');
-var assert = require('assert');
+const fs = require('fs');
+const assert = require('assert');
 
-var readlines = require('./index');
+const readlines = require('./index');
 
 describe('The hipster file', function() {
-  var fd, stats, expectedLines, actualLines;
+  let fd;
+  let stats;
+  let expectedLines;
+  let actualLines;
 
   before(function() {
     fd = fs.openSync('./test_data/hipster.txt', 'r');
     stats = fs.statSync('./test_data/hipster.txt');
     expectedLines = fs.readFileSync('./test_data/hipster.txt').toString().split('\n');
     actualLines = [];
-    for (var line of readlines(fd, stats.size)) {
+    for (let line of readlines(fd, stats.size)) {
       actualLines.push(line.toString());
     }
   });
@@ -38,14 +41,17 @@ describe('The hipster file', function() {
 });
 
 describe('The hipster windos file', function() {
-  var fd, stats, expectedLines, actualLines;
+  let fd;
+  let stats;
+  let expectedLines;
+  let actualLines;
 
   before(function() {
     fd = fs.openSync('./test_data/hipster_windos.txt', 'r');
     stats = fs.statSync('./test_data/hipster_windos.txt');
     expectedLines = fs.readFileSync('./test_data/hipster_windos.txt').toString().split('\r\n');
     actualLines = [];
-    for (var line of readlines(fd, stats.size)) {
+    for (let line of readlines(fd, stats.size)) {
       actualLines.push(line.toString());
     }
   });
@@ -70,7 +76,8 @@ describe('The hipster windos file', function() {
 });
 
 describe('The empty file', function() {
-  var fd, stats;
+  let fd;
+  let stats;
 
   before(function() {
     fd = fs.openSync('./test_data/empty_file.txt', 'r');
@@ -82,8 +89,8 @@ describe('The empty file', function() {
   });
 
   it('should return 0 lines', function() {
-    var lines = [];
-    for (var line of readlines(fd, stats.size)) {
+    const lines = [];
+    for (let line of readlines(fd, stats.size)) {
       lines.push(line);
     }
 
@@ -92,7 +99,8 @@ describe('The empty file', function() {
 });
 
 describe('The multibyte file', function() {
-  var fd, stats;
+  let fd;
+  let stats;
 
   before(function() {
     fd = fs.openSync('./test_data/multibyte_file.txt', 'r');
@@ -104,8 +112,8 @@ describe('The multibyte file', function() {
   });
 
   it('should return 4 lines', function() {
-    var lines = [];
-    for (var line of readlines(fd, stats.size)) {
+    const lines = [];
+    for (let line of readlines(fd, stats.size)) {
       lines.push(line);
     }
 
@@ -114,7 +122,8 @@ describe('The multibyte file', function() {
 });
 
 describe('The multibyte windos file', function() {
-  var fd, stats;
+  let fd;
+  let stats;
 
   before(function() {
     fd = fs.openSync('./test_data/multibyte_windos_file.txt', 'r');
@@ -126,8 +135,8 @@ describe('The multibyte windos file', function() {
   });
 
   it('should return 4 lines', function() {
-    var lines = [];
-    for (var line of readlines(fd, stats.size, 1)) {
+    const lines = [];
+    for (let line of readlines(fd, stats.size, 1)) {
       lines.push(line);
     }
 
@@ -136,7 +145,8 @@ describe('The multibyte windos file', function() {
 });
 
 describe('The normal file', function() {
-  var fd, stats;
+  let fd;
+  let stats;
 
   before(function() {
     fd = fs.openSync('./test_data/normal_file.txt', 'r');
@@ -148,8 +158,8 @@ describe('The normal file', function() {
   });
 
   it('should return 6 lines', function() {
-    var lines = [];
-    for (var line of readlines(fd, stats.size)) {
+    const lines = [];
+    for (let line of readlines(fd, stats.size)) {
       lines.push(line);
     }
 
@@ -158,7 +168,8 @@ describe('The normal file', function() {
 });
 
 describe('The one line file', function() {
-  var fd, stats;
+  let fd;
+  let stats;
 
   before(function() {
     fd = fs.openSync('./test_data/one_line_file.txt', 'r');
@@ -170,8 +181,8 @@ describe('The one line file', function() {
   });
 
   it('should return 1 line', function() {
-    var lines = [];
-    for (var line of readlines(fd, stats.size)) {
+    const lines = [];
+    for (let line of readlines(fd, stats.size)) {
       lines.push(line);
     }
 
@@ -180,7 +191,8 @@ describe('The one line file', function() {
 });
 
 describe('The three line file', function() {
-  var fd, stats;
+  let fd;
+  let stats;
 
   before(function() {
     fd = fs.openSync('./test_data/three_line_file.txt', 'r');
@@ -192,8 +204,8 @@ describe('The three line file', function() {
   });
 
   it('should return 3 lines', function() {
-    var lines = [];
-    for (var line of readlines(fd, stats.size)) {
+    const lines = [];
+    for (let line of readlines(fd, stats.size)) {
       lines.push(line);
     }
 
@@ -202,7 +214,8 @@ describe('The three line file', function() {
 });
 
 describe('File with empty lines', function() {
-  var fd, stats;
+  let fd;
+  let stats;
 
   before(function() {
     fd = fs.openSync('./test_data/empty_lines.txt', 'r');
@@ -214,8 +227,8 @@ describe('File with empty lines', function() {
   });
 
   it('should return 4 lines', function() {
-    var lines = [];
-    for (var line of readlines(fd, stats.size)) {
+    const lines = [];
+    for (let line of readlines(fd, stats.size)) {
       lines.push(line.toString());
     }
 
@@ -223,21 +236,20 @@ describe('File with empty lines', function() {
   });
 
   it('should return the correct text for each line', function() {
-    var lines = [];
-    for (var line of readlines(fd, stats.size)) {
+    const lines = [];
+    for (let line of readlines(fd, stats.size)) {
       lines.push(line.toString());
     }
 
-    var expected_lines = [
+    const expectedLines = [
       'Here is one line with text.',
       '',
       '',
-      'Here is another line with gaps between.'
+      'Here is another line with gaps between.',
     ];
 
-    for (var i = 0; i < lines.length; i++) {
-      assert.equal(expected_lines[i], lines[i]);
+    for (let i = 0; i < lines.length; i++) {
+      assert.equal(expectedLines[i], lines[i]);
     }
   });
 });
-
