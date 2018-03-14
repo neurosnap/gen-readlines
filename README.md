@@ -53,18 +53,18 @@ function* readFile() {
 `readlines` returns a generator object and calling `next` will get the next
 line as a [buffer object](https://nodejs.org/api/buffer.html):
 
-```
+```js
 var file = readlines(fd, stats.size);
 var line = file.next();
 console.log(line);
-> { value: <Buffer 42 65 73 70 ... >, done: false }
+# { value: <Buffer 42 65 73 70 ... >, done: false }
 ```
 
 Convert the buffer to a string:
 
-```
+```js
 line.toString();
-> This is the first line of the file
+# This is the first line of the file
 ```
 
 Compatibility
