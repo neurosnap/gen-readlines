@@ -36,8 +36,8 @@ const open = util.promisify(fs.open);
 const fstat = util.promisify(fs.fstat);
 
 function* readFile() {
-  const fs = yield open('./file.txt');
-  const stat = yield fstat(fs);
+  const fd = yield open('./file.txt');
+  const stat = yield fstat(fd);
   const fileSize = stat.size;
 
   for (let line of readlines(fd, fileSize)) {
