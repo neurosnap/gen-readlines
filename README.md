@@ -28,17 +28,26 @@ Provide `gen-readlines` with a file descriptor and the size of the file and it w
 create a generator which will iterate through all the lines in that file.
 
 ```
-var fs = require('fs');
-var readlines = require('gen-readlines');
+const fs = require('fs');
+const util = require('util');
+const readlines = require('gen-readlines');
 
-var fd = fs.openSync('./test_data/hipster.txt', 'r');
-var stats = fs.fstatSync(fd);
+const open = util.promisify(fs.open);
+const fstat = util.promisify(fs.fstat);
 
-for (let line of readlines(fd, stats.size)) {
-  console.log(line.toString());
+function* readFile() {
+  const fs = yield open('./file.txt');
+  const stat = yield fstat(fs);
+  const fileSize = stat.size;
+
+  for (let line of readlines(fd, fileSize)) {
+    console.log(line.toString());
+  }
+
+  console.log('continue code execution, no callbacks!');
+
+  fs.closeSync(fd);
 }
-
-fs.closeSync(fd);
 ```
 
 ```
