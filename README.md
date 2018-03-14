@@ -57,14 +57,14 @@ line as a [buffer object](https://nodejs.org/api/buffer.html):
 var file = readlines(fd, stats.size);
 var line = file.next();
 console.log(line);
-# { value: <Buffer 42 65 73 70 ... >, done: false }
+// { value: <Buffer 42 65 73 70 ... >, done: false }
 ```
 
 Convert the buffer to a string:
 
 ```js
 line.toString();
-# This is the first line of the file
+// This is the first line of the file
 ```
 
 Compatibility
