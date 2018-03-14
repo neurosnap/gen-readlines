@@ -27,7 +27,7 @@ Usage
 Provide `gen-readlines` with a file descriptor and the size of the file and it will
 create a generator which will iterate through all the lines in that file.
 
-```
+```js
 const fs = require('fs');
 const util = require('util');
 const readlines = require('gen-readlines');
@@ -48,20 +48,6 @@ function* readFile() {
 
   fs.closeSync(fd);
 }
-```
-
-```
-fs.open('./test_data/hipster.txt', 'r', function(err, fd) {
-  if (err) throw err;
-  fs.fstat(fd, function(err, stats) {
-    if (err) throw err;
-
-    for (let line of readlines(fd, stats.size)) {
-      console.log(line.toString());
-    }
-
-  });
-});
 ```
 
 `readlines` returns a generator object and calling `next` will get the next
