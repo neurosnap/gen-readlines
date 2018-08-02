@@ -67,6 +67,17 @@ line.toString();
 // This is the first line of the file
 ```
 
+## Simplified API
+
+Also you can use the simplified version of `readlines`:
+```js
+const readlines = require('gen-readlines');
+
+for (let line of readlines.fromFile('./file.txt')) {
+  console.log(line.toString());
+}
+```
+
 Compatibility
 -------------
 
@@ -81,6 +92,10 @@ Documentation
  * filesize {Number} The size of the file in bytes
  * bufferSize {Number} The size of the buffer in bytes, default: 64\*1024
  * position {Number} The position where to start reading the file in bytes, default: 0
+
+#### readlines.fromFile (filename)
+
+ * filename {string} Name of input file
 
 Testing
 -------

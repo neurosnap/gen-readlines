@@ -4,7 +4,7 @@
   "description": "Generator based line reader",
   "main": "index",
   "scripts": {
-    "test": "mocha --harmony -R spec tests.js",
+    "test": "mocha --harmony -R spec tests.js tests-simplified.js",
     "lint": "eslint *.js"
   },
   "repository": {
