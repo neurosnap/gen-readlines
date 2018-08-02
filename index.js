@@ -76,4 +76,21 @@ function _concat(buffOne, buffTwo) {
   return Buffer.concat([buffOne, buffTwo], newLength);
 }
 
+/**
+ * Generator based line reader with simplified API
+ *
+ * @param {string} [filename] Name of input file
+ * @return {Object} The generator object
+ */
+function* fromFile(filename) {
+  const fd = fs.openSync(filename, 'r');
+  const fileSize = fs.statSync(filename).size;
+
+  yield* readlines(fd, fileSize);
+
+  fs.closeSync(fd);
+}
+
 module.exports = readlines;
+
+module.exports.fromFile = fromFile;
