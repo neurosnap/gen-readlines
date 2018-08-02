@@ -1,6 +1,11 @@
 Changes
 =======
 
+v0.2.0
+------
+
+* Added new `fromFile` function by [Igor Kamyshev](https://github.com/igorkamyshev) [13](https://github.com/neurosnap/gen-readlines/pull/13)
+
 v0.1.3
 ------
 
