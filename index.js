@@ -19,6 +19,7 @@ function* readlines(fd, filesize, bufferSize, position) {
   if (typeof position === 'undefined') position = 0;
 
   let lineBuffer;
+  let lastWasCR;
 
   while (position < filesize) {
     let remaining = filesize - position;
@@ -29,26 +30,43 @@ function* readlines(fd, filesize, bufferSize, position) {
 
     let curpos = 0;
     let startpos = 0;
-    let lastbyte = null;
     let curbyte;
     while (curpos < bytesRead) {
       curbyte = readChunk[curpos];
-      // skip LF if last chunk ended in CR
-      if (curbyte === LF && lastbyte !== CR || curbyte === CR && curpos < bytesRead - 1) {
-        yield _concat(lineBuffer, readChunk.slice(startpos, curpos));
-
-        lineBuffer = undefined;
-        startpos = curpos + 1;
-
-        if (curbyte === CR && readChunk[curpos + 1] === LF) {
-          startpos++;
-          curpos++;
-        }
-      } else if (curbyte === CR && curpos >= bytesRead - 1) {
-        lastbyte = curbyte;
+      // break after CR or LF, otherwise go on
+      if (curbyte !== LF && curbyte !== CR) {
+        ++curpos;
+        lastWasCR = false;
+        continue;
       }
 
-      curpos++;
+      // skip this LF if last chunk ended with a CR
+      if (curbyte === LF && lastWasCR) {
+        startpos = ++curpos;
+        lastWasCR = false;
+        continue;
+      }
+
+      // yield the buffer from the last line break to the current position
+      yield _concat(lineBuffer, readChunk.slice(startpos, curpos));
+
+      ++curpos;
+      // skip one more character if a LF follows a CR, otherwise remember
+      // that the CR was standing alone
+      if (curbyte === CR) {
+        if (readChunk[curpos] === LF) {
+          ++curpos;
+          lastWasCR = false;
+        } else {
+          lastWasCR = true;
+        }
+      } else {
+        lastWasCR = false;
+      }
+
+      // invalidate the yielded buffer and move after the line break
+      lineBuffer = undefined;
+      startpos = curpos;
     }
 
     position += bytesRead;
