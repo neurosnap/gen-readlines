@@ -81,7 +81,7 @@ for (let line of readlines.fromFile('./file.txt')) {
 Compatibility
 -------------
 
-* node 0.11.x or greater, with `--harmony-generators` flag or `--harmony` to get access to generators.
+* node 6 or newer, to get access to generators and new methods of the `Buffer` object.
 
 Documentation
 -------------
