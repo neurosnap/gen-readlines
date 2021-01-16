@@ -2,6 +2,9 @@
   "name": "gen-readlines",
   "version": "0.2.0",
   "description": "Generator based line reader",
+  "engines": {
+    "node": ">=5.10.0"
+  },
   "main": "index",
   "scripts": {
     "test": "mocha --harmony -R spec tests.js tests-simplified.js",

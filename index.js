@@ -24,7 +24,7 @@ function* readlines(fd, filesize, bufferSize, position) {
     let remaining = filesize - position;
     if (remaining < bufferSize) bufferSize = remaining;
 
-    let readChunk = new Buffer(bufferSize);
+    let readChunk = Buffer.alloc(bufferSize);
     let bytesRead = fs.readSync(fd, readChunk, 0, bufferSize, position);
 
     let curpos = 0;
