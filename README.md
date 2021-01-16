@@ -67,6 +67,32 @@ line.toString();
 // This is the first line of the file
 ```
 
+## Maximum Line Length
+
+You can limit the maximum line length. When the specified length is reached while reading a line, the buffer will be returned as a new line just like when a line break was encountered:
+
+```js
+// If original lines are longer than 255 characters, an artificial line break
+// will be enforced after each 255 characters reached on a single line. More
+// then original lines will be returned by the generator then.
+var file = readlines(fd, stats.size, undefined, undefined, 255);
+for (let line of readlines(fd, fileSize)) {
+  console.log(line.toString());
+}
+```
+
+You can change the maximum line length for each generated line. If you do not specify the maximum length, when you read the next line, the original maximum line length passed to `readlines` will be used:
+
+```js
+// Lines will not be longer than 255 characters by default.
+var file = readlines(fd, stats.size, undefined, undefined, 255);
+var line = file.next(); // 255 characters maximum
+line = file.next(127);  // 127 characters maximum
+line = file.next();     // 255 characters maximum again
+```
+
+*Note:* The very first generation (call to the `next` method) cannot accept an alternative maximum line length. It will always use the default value passed to `readlines`. First the following calls to `next` allow to specify alternative values. This is caused by the nature of JavaScript generators, which obtain the value from `yield` [first when when resuming the generation](https://stackoverflow.com/a/37355045/623816).
+
 ## Simplified API
 
 Also you can use the simplified version of `readlines`:
@@ -86,16 +112,19 @@ Compatibility
 Documentation
 -------------
 
-#### readlines (fd, filesize, bufferSize=64\*1024, position=0)
+#### readlines (fd, filesize, bufferSize=64\*1024, position=0, maxLineLength=Infinity)
 
  * fd {Number} The file descriptor
  * filesize {Number} The size of the file in bytes
  * bufferSize {Number} The size of the buffer in bytes, default: 64\*1024
  * position {Number} The position where to start reading the file in bytes, default: 0
+ * maxLineLength {Number} The length to stop reading at if no line break has been reached, default: Infinity
 
-#### readlines.fromFile (filename)
+#### readlines.fromFile (filename, bufferSize=64\*1024, maxLineLength=Infinity)
 
  * filename {string} Name of input file
+ * bufferSize {Number} The size of the buffer in bytes, default: 64\*1024
+ * maxLineLength {Number} The length to stop reading at if no line break has been reached, default: Infinity
 
 Testing
 -------

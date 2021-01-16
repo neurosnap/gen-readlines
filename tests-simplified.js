@@ -74,7 +74,7 @@ describe('The empty file with simplified API', function() {
 describe('The multibyte file with simplified API', function() {
   it('should return 4 lines', function() {
     const lines = [];
-    for (let line of readlines.fromFile('./test_data/multibyte_file.txt', 'r')) {
+    for (let line of readlines.fromFile('./test_data/multibyte_file.txt', 1)) {
       lines.push(line);
     }
 
@@ -85,7 +85,7 @@ describe('The multibyte file with simplified API', function() {
 describe('The multibyte windos file with simplified API', function() {
   it('should return 4 lines', function() {
     const lines = [];
-    for (let line of readlines.fromFile('./test_data/multibyte_windos_file.txt')) {
+    for (let line of readlines.fromFile('./test_data/multibyte_windos_file.txt', 1)) {
       lines.push(line);
     }
 
@@ -155,3 +155,12 @@ describe('File with empty lines with simplified API', function() {
   });
 });
 
+describe('The simplified API with the maximum line length limited', function() {
+  it('should return 6 instead of 3 lines', function() {
+    const lines = [];
+    for (let line of readlines.fromFile('./test_data/three_line_file.txt', undefined, 10)) {
+      lines.push(line);
+    }
+    assert.equal(6, lines.length);
+  });
+});
