@@ -2,9 +2,12 @@
   "name": "gen-readlines",
   "version": "0.2.0",
   "description": "Generator based line reader",
+  "engines": {
+    "node": ">=6"
+  },
   "main": "index",
   "scripts": {
-    "test": "mocha --harmony -R spec tests.js tests-simplified.js",
+    "test": "mocha -R spec tests.js tests-simplified.js",
     "lint": "eslint *.js"
   },
   "repository": {
