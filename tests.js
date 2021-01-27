@@ -253,3 +253,43 @@ describe('File with empty lines', function() {
     }
   });
 });
+
+describe('The file with two CR-only line breaks', function() {
+  let fd;
+  let stats;
+
+  before(function() {
+    fd = fs.openSync('./test_data/cr_alone.txt', 'r');
+    stats = fs.statSync('./test_data/cr_alone.txt');
+  });
+
+  after(function() {
+    fs.closeSync(fd);
+  });
+
+  it('should return 2 lines', function() {
+    const lines = [];
+    for (let line of readlines(fd, stats.size, 1)) {
+      lines.push(line);
+    }
+
+    assert.equal(2, lines.length);
+  });
+
+  it('should not include CR characters in the returned lines', function() {
+    const gen = readlines(fd, stats.size);
+    // first line
+    let entry = gen.next();
+    assert.ok(!entry.done);
+    let line = entry.value.toString();
+    assert.ok(line.charCodeAt(line.length - 1) !== 13);
+    // second line
+    entry = gen.next();
+    assert.ok(!entry.done);
+    line = entry.value.toString();
+    assert.ok(line.charCodeAt(line.length - 1) !== 13);
+    // end
+    entry = gen.next();
+    assert.ok(entry.done);
+  });
+});
