@@ -12,12 +12,15 @@ const CR = 13;
  * @param {Number} [filesize] The size of the file in bytes
  * @param {Number} [bufferSize] The size of the buffer in bytes
  * @param {Number} [position] The position where to start reading the file in bytes
+ * @param {Number} [maxLineLength] The length to stop reading at if no line break has been reached
  * @return {Object} The generator object
  */
-function* readlines(fd, filesize, bufferSize, position) {
+function* readlines(fd, filesize, bufferSize, position, maxLineLength) {
   if (typeof bufferSize === 'undefined') bufferSize = 64 * 1024;
   if (typeof position === 'undefined') position = 0;
+  if (!(maxLineLength > 0)) maxLineLength = Infinity;
 
+  const originalMaxLineLength = maxLineLength;
   let lineBuffer;
   let lastWasCR;
 
@@ -32,25 +35,25 @@ function* readlines(fd, filesize, bufferSize, position) {
     let startpos = 0;
     let curbyte;
     while (curpos < bytesRead) {
-      curbyte = readChunk[curpos];
-      // break after CR or LF, otherwise go on
-      if (curbyte !== LF && curbyte !== CR) {
-        ++curpos;
+      curbyte = readChunk[curpos++];
+      // break after CR or LF, or after the maximum length, otherwise go on
+      if (curbyte !== LF && curbyte !== CR && curpos - startpos <= maxLineLength) {
         lastWasCR = false;
         continue;
       }
 
-      // skip this LF if last chunk ended with a CR
+      // skip this LF if the last chunk ended with a CR
       if (curbyte === LF && lastWasCR) {
-        startpos = ++curpos;
+        startpos = curpos;
         lastWasCR = false;
         continue;
       }
 
       // yield the buffer from the last line break to the current position
-      yield _concat(lineBuffer, readChunk.slice(startpos, curpos));
+      const wantedLength = yield _concat(lineBuffer, readChunk.slice(startpos, curpos - 1));
+      // change the maximum length to the latest parameter of next()
+      maxLineLength = wantedLength > 0 ? wantedLength : originalMaxLineLength;
 
-      ++curpos;
       // skip one more character if a LF follows a CR, otherwise remember
       // that the CR was standing alone
       if (curbyte === CR) {
@@ -98,13 +101,15 @@ function _concat(buffOne, buffTwo) {
  * Generator based line reader with simplified API
  *
  * @param {string} [filename] Name of input file
+ * @param {Number} [bufferSize] The size of the buffer in bytes
+ * @param {Number} [maxLineLength] The length to stop reading at if no line break has been reached
  * @return {Object} The generator object
  */
-function* fromFile(filename) {
+function* fromFile(filename, bufferSize, maxLineLength) {
   const fd = fs.openSync(filename, 'r');
   const fileSize = fs.statSync(filename).size;
 
-  yield* readlines(fd, fileSize);
+  yield* readlines(fd, fileSize, bufferSize, undefined, maxLineLength);
 
   fs.closeSync(fd);
 }

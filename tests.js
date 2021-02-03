@@ -293,3 +293,47 @@ describe('The file with two CR-only line breaks', function() {
     assert.ok(entry.done);
   });
 });
+
+describe('With the maximum line length limited', function() {
+  let fd;
+  let stats;
+
+  before(function() {
+    fd = fs.openSync('./test_data/three_line_file.txt', 'r');
+    stats = fs.statSync('./test_data/three_line_file.txt');
+  });
+
+  after(function() {
+    fs.closeSync(fd);
+  });
+
+  it('the three line file should return 6 instead of 3 lines', function() {
+    const lines = [];
+    for (let line of readlines(fd, stats.size, undefined, undefined, 10)) {
+      assert.ok(line.length <= 10);
+      lines.push(line);
+    }
+    assert.equal(6, lines.length);
+  });
+
+  it('the maximum line length can be changed for an iteration', function() {
+    const gen = readlines(fd, stats.size, undefined, undefined, 10);
+    // first line
+    let entry = gen.next();
+    assert.ok(!entry.done);
+    assert.ok(entry.value.length === 10);
+    entry = gen.next();
+    assert.ok(!entry.done);
+    assert.ok(entry.value.length < 10);
+    // second line
+    entry = gen.next(5);
+    assert.ok(!entry.done);
+    assert.ok(entry.value.length === 5);
+    entry = gen.next();
+    assert.ok(!entry.done);
+    assert.ok(entry.value.length === 10);
+    entry = gen.next();
+    assert.ok(!entry.done);
+    assert.ok(entry.value.length < 10);
+  });
+});
