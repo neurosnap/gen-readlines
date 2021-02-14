@@ -1,6 +1,13 @@
 Changes
 =======
 
+v1.0.0
+
+* :sparkles: Adds official typescript support
+* :wrench: Replace deprecated constructor of Buffer with Buffer.alloc [#14](https://github.com/neurosnap/gen-readlines/pull/14)
+* :sparkles: Allow limiting the maximum line length [#16](https://github.com/neurosnap/gen-readlines/pull/16)
+* :sparkles: Support CR alone as a line break [#15](https://github.com/neurosnap/gen-readlines/pull/15)
+
 v0.2.0
 ------
 
