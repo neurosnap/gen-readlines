@@ -1,241 +1,245 @@
-'use strict';
+import fs from 'fs';
+import assert from 'assert';
 
-const fs = require('fs');
-const assert = require('assert');
+import readlines from '../index';
 
-const readlines = require('./index');
+describe('The hipster file', function () {
+  let fd: any;
+  let stats: any;
+  let expectedLines: string[];
+  let actualLines: string[];
 
-describe('The hipster file', function() {
-  let fd;
-  let stats;
-  let expectedLines;
-  let actualLines;
-
-  before(function() {
+  before(function () {
     fd = fs.openSync('./test_data/hipster.txt', 'r');
     stats = fs.statSync('./test_data/hipster.txt');
-    expectedLines = fs.readFileSync('./test_data/hipster.txt').toString().split('\n');
+    expectedLines = fs
+      .readFileSync('./test_data/hipster.txt')
+      .toString()
+      .split('\n');
     actualLines = [];
     for (let line of readlines(fd, stats.size)) {
       actualLines.push(line.toString());
     }
   });
 
-  after(function() {
+  after(function () {
     fs.closeSync(fd);
   });
 
-  it('should return 24 lines', function() {
-    assert.equal(actualLines.length, 24);
+  it('should return 24 lines', function () {
+    assert.strictEqual(actualLines.length, 24);
   });
 
-  it('parsed lines must match original lines', function() {
-    assert.deepEqual(actualLines, expectedLines);
+  it('parsed lines must match original lines', function () {
+    assert.deepStrictEqual(actualLines, expectedLines);
   });
 
-  it('parsed lines must not contain \\n', function() {
-    actualLines.forEach(function(line) {
+  it('parsed lines must not contain \\n', function () {
+    actualLines.forEach(function (line) {
       assert.ok(/\\n/.exec(line) === null);
     });
   });
 });
 
-describe('The hipster windos file', function() {
-  let fd;
-  let stats;
-  let expectedLines;
-  let actualLines;
+describe('The hipster windos file', function () {
+  let fd: any;
+  let stats: any;
+  let expectedLines: string[];
+  let actualLines: string[];
 
-  before(function() {
+  before(function () {
     fd = fs.openSync('./test_data/hipster_windos.txt', 'r');
     stats = fs.statSync('./test_data/hipster_windos.txt');
-    expectedLines = fs.readFileSync('./test_data/hipster_windos.txt').toString().split('\r\n');
+    expectedLines = fs
+      .readFileSync('./test_data/hipster_windos.txt')
+      .toString()
+      .split('\r\n');
     actualLines = [];
     for (let line of readlines(fd, stats.size)) {
       actualLines.push(line.toString());
     }
   });
 
-  after(function() {
+  after(function () {
     fs.closeSync(fd);
   });
 
-  it('should return 24 lines', function() {
-    assert.equal(actualLines.length, 24);
+  it('should return 24 lines', function () {
+    assert.strictEqual(actualLines.length, 24);
   });
 
-  it('parsed lines must match original lines', function() {
-    assert.deepEqual(actualLines, expectedLines);
+  it('parsed lines must match original lines', function () {
+    assert.deepStrictEqual(actualLines, expectedLines);
   });
 
-  it('parsed lines must not contain \\r nor \\n', function() {
-    actualLines.forEach(function(line) {
+  it('parsed lines must not contain \\r nor \\n', function () {
+    actualLines.forEach(function (line) {
       assert.ok(/\\r|\\n/.exec(line) === null);
     });
   });
 });
 
-describe('The empty file', function() {
-  let fd;
-  let stats;
+describe('The empty file', function () {
+  let fd: any;
+  let stats: any;
 
-  before(function() {
+  before(function () {
     fd = fs.openSync('./test_data/empty_file.txt', 'r');
     stats = fs.statSync('./test_data/empty_file.txt');
   });
 
-  after(function() {
+  after(function () {
     fs.closeSync(fd);
   });
 
-  it('should return 0 lines', function() {
+  it('should return 0 lines', function () {
     const lines = [];
     for (let line of readlines(fd, stats.size)) {
       lines.push(line);
     }
 
-    assert.equal(0, lines.length);
+    assert.strictEqual(0, lines.length);
   });
 });
 
-describe('The multibyte file', function() {
-  let fd;
-  let stats;
+describe('The multibyte file', function () {
+  let fd: any;
+  let stats: any;
 
-  before(function() {
+  before(function () {
     fd = fs.openSync('./test_data/multibyte_file.txt', 'r');
     stats = fs.statSync('./test_data/multibyte_file.txt');
   });
 
-  after(function() {
+  after(function () {
     fs.closeSync(fd);
   });
 
-  it('should return 4 lines', function() {
+  it('should return 4 lines', function () {
     const lines = [];
     for (let line of readlines(fd, stats.size)) {
       lines.push(line);
     }
 
-    assert.equal(4, lines.length);
+    assert.strictEqual(4, lines.length);
   });
 });
 
-describe('The multibyte windos file', function() {
-  let fd;
-  let stats;
+describe('The multibyte windos file', function () {
+  let fd: any;
+  let stats: any;
 
-  before(function() {
+  before(function () {
     fd = fs.openSync('./test_data/multibyte_windos_file.txt', 'r');
     stats = fs.statSync('./test_data/multibyte_windos_file.txt');
   });
 
-  after(function() {
+  after(function () {
     fs.closeSync(fd);
   });
 
-  it('should return 4 lines', function() {
+  it('should return 4 lines', function () {
     const lines = [];
-    for (let line of readlines(fd, stats.size, 1)) {
+    for (let line of readlines(fd, stats.size, { bufferSize: 1 })) {
       lines.push(line);
     }
 
-    assert.equal(4, lines.length);
+    assert.strictEqual(4, lines.length);
   });
 });
 
-describe('The normal file', function() {
-  let fd;
-  let stats;
+describe('The normal file', function () {
+  let fd: any;
+  let stats: any;
 
-  before(function() {
+  before(function () {
     fd = fs.openSync('./test_data/normal_file.txt', 'r');
     stats = fs.statSync('./test_data/normal_file.txt');
   });
 
-  after(function() {
+  after(function () {
     fs.closeSync(fd);
   });
 
-  it('should return 6 lines', function() {
+  it('should return 6 lines', function () {
     const lines = [];
     for (let line of readlines(fd, stats.size)) {
       lines.push(line);
     }
 
-    assert.equal(6, lines.length);
+    assert.strictEqual(6, lines.length);
   });
 });
 
-describe('The one line file', function() {
-  let fd;
-  let stats;
+describe('The one line file', function () {
+  let fd: any;
+  let stats: any;
 
-  before(function() {
+  before(function () {
     fd = fs.openSync('./test_data/one_line_file.txt', 'r');
     stats = fs.statSync('./test_data/one_line_file.txt');
   });
 
-  after(function() {
+  after(function () {
     fs.closeSync(fd);
   });
 
-  it('should return 1 line', function() {
+  it('should return 1 line', function () {
     const lines = [];
     for (let line of readlines(fd, stats.size)) {
       lines.push(line);
     }
 
-    assert.equal(1, lines.length);
+    assert.strictEqual(1, lines.length);
   });
 });
 
-describe('The three line file', function() {
-  let fd;
-  let stats;
+describe('The three line file', function () {
+  let fd: any;
+  let stats: any;
 
-  before(function() {
+  before(function () {
     fd = fs.openSync('./test_data/three_line_file.txt', 'r');
     stats = fs.statSync('./test_data/three_line_file.txt');
   });
 
-  after(function() {
+  after(function () {
     fs.closeSync(fd);
   });
 
-  it('should return 3 lines', function() {
+  it('should return 3 lines', function () {
     const lines = [];
     for (let line of readlines(fd, stats.size)) {
       lines.push(line);
     }
 
-    assert.equal(3, lines.length);
+    assert.strictEqual(3, lines.length);
   });
 });
 
-describe('File with empty lines', function() {
-  let fd;
-  let stats;
+describe('File with empty lines', function () {
+  let fd: any;
+  let stats: any;
 
-  before(function() {
+  before(function () {
     fd = fs.openSync('./test_data/empty_lines.txt', 'r');
     stats = fs.statSync('./test_data/empty_lines.txt');
   });
 
-  after(function() {
+  after(function () {
     fs.closeSync(fd);
   });
 
-  it('should return 4 lines', function() {
+  it('should return 4 lines', function () {
     const lines = [];
     for (let line of readlines(fd, stats.size)) {
       lines.push(line.toString());
     }
 
-    assert.equal(4, lines.length);
+    assert.strictEqual(4, lines.length);
   });
 
-  it('should return the correct text for each line', function() {
+  it('should return the correct text for each line', function () {
     const lines = [];
     for (let line of readlines(fd, stats.size)) {
       lines.push(line.toString());
@@ -249,34 +253,34 @@ describe('File with empty lines', function() {
     ];
 
     for (let i = 0; i < lines.length; i++) {
-      assert.equal(expectedLines[i], lines[i]);
+      assert.strictEqual(expectedLines[i], lines[i]);
     }
   });
 });
 
-describe('The file with two CR-only line breaks', function() {
-  let fd;
-  let stats;
+describe('The file with two CR-only line breaks', function () {
+  let fd: any;
+  let stats: any;
 
-  before(function() {
+  before(function () {
     fd = fs.openSync('./test_data/cr_alone.txt', 'r');
     stats = fs.statSync('./test_data/cr_alone.txt');
   });
 
-  after(function() {
+  after(function () {
     fs.closeSync(fd);
   });
 
-  it('should return 2 lines', function() {
+  it('should return 2 lines', function () {
     const lines = [];
-    for (let line of readlines(fd, stats.size, 1)) {
+    for (let line of readlines(fd, stats.size, { bufferSize: 1 })) {
       lines.push(line);
     }
 
-    assert.equal(2, lines.length);
+    assert.strictEqual(2, lines.length);
   });
 
-  it('should not include CR characters in the returned lines', function() {
+  it('should not include CR characters in the returned lines', function () {
     const gen = readlines(fd, stats.size);
     // first line
     let entry = gen.next();
@@ -294,30 +298,30 @@ describe('The file with two CR-only line breaks', function() {
   });
 });
 
-describe('With the maximum line length limited', function() {
-  let fd;
-  let stats;
+describe('With the maximum line length limited', function () {
+  let fd: any;
+  let stats: any;
 
-  before(function() {
+  before(function () {
     fd = fs.openSync('./test_data/three_line_file.txt', 'r');
     stats = fs.statSync('./test_data/three_line_file.txt');
   });
 
-  after(function() {
+  after(function () {
     fs.closeSync(fd);
   });
 
-  it('the three line file should return 6 instead of 3 lines', function() {
+  it('the three line file should return 6 instead of 3 lines', function () {
     const lines = [];
-    for (let line of readlines(fd, stats.size, undefined, undefined, 10)) {
+    for (let line of readlines(fd, stats.size, { maxLineLength: 10 })) {
       assert.ok(line.length <= 10);
       lines.push(line);
     }
-    assert.equal(6, lines.length);
+    assert.strictEqual(6, lines.length);
   });
 
-  it('the maximum line length can be changed for an iteration', function() {
-    const gen = readlines(fd, stats.size, undefined, undefined, 10);
+  it('the maximum line length can be changed for an iteration', function () {
+    const gen = readlines(fd, stats.size, { maxLineLength: 10 });
     // first line
     let entry = gen.next();
     assert.ok(!entry.done);

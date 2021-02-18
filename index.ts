@@ -1,9 +1,28 @@
-'use strict';
-
-const fs = require('fs');
+import fs from 'fs';
 
 const LF = 10;
 const CR = 13;
+
+/**
+ * Combines two buffers
+ *
+ * @param {Object} [buffOne] First buffer object
+ * @param {Object} [buffTwo] Second buffer object
+ * @return {Object} Combined buffer object
+ */
+function _concat(buffOne?: Buffer, buffTwo?: Buffer): Buffer {
+  if (!buffOne && !buffTwo) {
+    throw new Error(
+      'when concatenating two buffers, at least one buffer but exist',
+    );
+  }
+
+  if (!buffOne) return buffTwo as Buffer;
+  if (!buffTwo) return buffOne as Buffer;
+
+  const newLength = buffOne.length + buffTwo.length;
+  return Buffer.concat([buffOne, buffTwo], newLength);
+}
 
 /**
  * Generator based line reader
@@ -15,10 +34,22 @@ const CR = 13;
  * @param {Number} [maxLineLength] The length to stop reading at if no line break has been reached
  * @return {Object} The generator object
  */
-function* readlines(fd, filesize, bufferSize, position, maxLineLength) {
-  if (typeof bufferSize === 'undefined') bufferSize = 64 * 1024;
-  if (typeof position === 'undefined') position = 0;
-  if (!(maxLineLength > 0)) maxLineLength = Infinity;
+export default function* readlines(
+  fd: number,
+  filesize: number,
+  {
+    bufferSize = 64 * 1024,
+    position = 0,
+    maxLineLength = Infinity,
+  }: {
+    bufferSize?: number;
+    position?: number;
+    maxLineLength?: number;
+  } = {},
+): Generator<Buffer> {
+  if (maxLineLength <= 0) {
+    throw new Error('maxLineLength must be a positive number');
+  }
 
   const originalMaxLineLength = maxLineLength;
   let lineBuffer;
@@ -37,7 +68,11 @@ function* readlines(fd, filesize, bufferSize, position, maxLineLength) {
     while (curpos < bytesRead) {
       curbyte = readChunk[curpos++];
       // break after CR or LF, or after the maximum length, otherwise go on
-      if (curbyte !== LF && curbyte !== CR && curpos - startpos <= maxLineLength) {
+      if (
+        curbyte !== LF &&
+        curbyte !== CR &&
+        curpos - startpos <= maxLineLength
+      ) {
         lastWasCR = false;
         continue;
       }
@@ -49,8 +84,10 @@ function* readlines(fd, filesize, bufferSize, position, maxLineLength) {
         continue;
       }
 
-      // yield the buffer from the last line break to the current position
-      const wantedLength = yield _concat(lineBuffer, readChunk.slice(startpos, curpos - 1));
+      // create buffer from the last line break to the current position
+      const buffer = _concat(lineBuffer, readChunk.slice(startpos, curpos - 1));
+      // yield the buffer
+      const wantedLength: any = yield buffer;
       // change the maximum length to the latest parameter of next()
       maxLineLength = wantedLength > 0 ? wantedLength : originalMaxLineLength;
 
@@ -79,22 +116,9 @@ function* readlines(fd, filesize, bufferSize, position, maxLineLength) {
     }
   }
   // dump what ever is left in the buffer
-  if (Buffer.isBuffer(lineBuffer)) yield lineBuffer;
-};
-
-/**
- * Combines two buffers
- *
- * @param {Object} [buffOne] First buffer object
- * @param {Object} [buffTwo] Second buffer object
- * @return {Object} Combined buffer object
- */
-function _concat(buffOne, buffTwo) {
-  if (!buffOne) return buffTwo;
-  if (!buffTwo) return buffOne;
-
-  let newLength = buffOne.length + buffTwo.length;
-  return Buffer.concat([buffOne, buffTwo], newLength);
+  if (Buffer.isBuffer(lineBuffer)) {
+    yield lineBuffer;
+  }
 }
 
 /**
@@ -105,15 +129,20 @@ function _concat(buffOne, buffTwo) {
  * @param {Number} [maxLineLength] The length to stop reading at if no line break has been reached
  * @return {Object} The generator object
  */
-function* fromFile(filename, bufferSize, maxLineLength) {
+export function* fromFile(
+  filename: string,
+  {
+    bufferSize,
+    maxLineLength,
+  }: {
+    bufferSize?: number;
+    maxLineLength?: number;
+  } = {},
+) {
   const fd = fs.openSync(filename, 'r');
   const fileSize = fs.statSync(filename).size;
 
-  yield* readlines(fd, fileSize, bufferSize, undefined, maxLineLength);
+  yield* readlines(fd, fileSize, { bufferSize, maxLineLength });
 
   fs.closeSync(fd);
 }
-
-module.exports = readlines;
-
-module.exports.fromFile = fromFile;
