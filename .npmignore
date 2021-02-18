@@ -1,0 +1,6 @@
+test/
+test_data/
+perf/
+prettier.config.js
+tsconfig.json
+yarn.lock
