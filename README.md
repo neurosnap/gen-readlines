@@ -140,12 +140,14 @@ npm test
 
 ## Performance
 
-`./perf` contains a micro-benchmark, ran each benchmark five times and then averaged the results:
+`./perf` contains a micro-benchmark of several libraries, including this one:
 
-| Package       | Runtime (nanoseconds) |
-|---------------|-----------------------|
-| readline      | 17769036.4            |
-| gen-readlines | 24480520.4            |
-| linebyline    | 26549054.2            |
-| byline        | 41573681.0            |
-| line-reader   | 58315530.0            |
+    ❯ node perf
+    Reading lines using...
+      byline x 148 ops/sec ±2.08% (72 runs sampled)
+      line-reader x 152 ops/sec ±2.45% (76 runs sampled)
+      linebyline x 99.08 ops/sec ±1.80% (78 runs sampled)
+      readline x 230 ops/sec ±1.42% (72 runs sampled)
+      gen-readlines returning each line x 40.47 ops/sec ±2.50% (66 runs sampled)
+      gen-readlines skipping all lines x 46.33 ops/sec ±1.80% (74 runs sampled)
+    The fastest one was readline.
