@@ -9,7 +9,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "tsc --noEmit && mocha --require ts-node/register ./test/*.ts",
+    "test": "tsc --noEmit && nyc mocha --require ts-node/register ./test/*.ts",
     "format": "prettier --write {perf,test}/*.{js,ts} index.ts ./*.{ts,js}",
     "prepublish": "yarn build"
   },
@@ -33,6 +33,18 @@
     "url": "https://github.com/neurosnap/gen-readlines/issues"
   },
   "homepage": "https://github.com/neurosnap/gen-readlines#readme",
+    "nyc": {
+    "include": "index.ts",
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ],
+    "check-coverage": true,
+    "branches": 85,
+    "statements": 90,
+    "functions": 100,
+    "lines": 90
+  },
   "dependencies": {},
   "devDependencies": {
     "@types/mocha": "^8.2.0",
@@ -40,6 +52,7 @@
     "husky": ">=4",
     "lint-staged": ">=10",
     "mocha": "^8.3.0",
+    "nyc": "^15.1.0",
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.5"
