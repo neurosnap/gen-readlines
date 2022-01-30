@@ -34,7 +34,7 @@ function _concat(buffOne?: Buffer, buffTwo?: Buffer): Buffer {
  * @param {Number} [maxLineLength] The length to stop reading at if no line break has been reached
  * @return {Object} The generator object
  */
-export default function* readlines(
+function* readlines(
   fd: number,
   filesize: number,
   {
@@ -129,7 +129,7 @@ export default function* readlines(
  * @param {Number} [maxLineLength] The length to stop reading at if no line break has been reached
  * @return {Object} The generator object
  */
-export function* fromFile(
+function* fromFile(
   filename: string,
   {
     bufferSize,
@@ -146,3 +146,8 @@ export function* fromFile(
 
   fs.closeSync(fd);
 }
+
+readlines.fromFile = fromFile;
+readlines.default = readlines; // compatibility with 1.0.0
+
+export = readlines; // does not wrap the default export in { default }
