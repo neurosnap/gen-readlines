@@ -1,6 +1,6 @@
 'use strict';
 
-const readlines = require('../index');
+const readlines = require('..');
 const fs = require('fs');
 
 const fd = fs.openSync('./tale_two_cities.txt', 'r');
