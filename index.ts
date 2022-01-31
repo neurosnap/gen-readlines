@@ -37,16 +37,31 @@ function _concat(buffOne?: Buffer, buffTwo?: Buffer): Buffer {
 function* readlines(
   fd: number,
   filesize: number,
-  {
+  options:
+    | {
+        bufferSize?: number;
+        position?: number;
+        maxLineLength?: number;
+      }
+    | number = {},
+  positionCompat?: number,
+  maxLineLengthCompat?: number,
+): Generator<Buffer> {
+  let {
     bufferSize = 64 * 1024,
     position = 0,
     maxLineLength = Infinity,
-  }: {
-    bufferSize?: number;
-    position?: number;
-    maxLineLength?: number;
-  } = {},
-): Generator<Buffer> {
+  } = options
+    ? typeof options === 'object'
+      ? options
+      : { bufferSize: options }
+    : {};
+  if (positionCompat !== undefined) {
+    position = positionCompat;
+  }
+  if (maxLineLengthCompat !== undefined) {
+    maxLineLength = maxLineLengthCompat;
+  }
   if (maxLineLength <= 0) {
     throw new Error('maxLineLength must be a positive number');
   }
